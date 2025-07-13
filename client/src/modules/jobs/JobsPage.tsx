@@ -35,14 +35,11 @@ import {
   Zap,
   HelpCircle
 } from 'lucide-react';
-import OnboardingTour from '../../components/OnboardingTour';
-import { useOnboardingTour } from '../../hooks/useOnboardingTour';
 import FinancialTipsTooltip from '../../components/FinancialTipsTooltip';
 
 const JobsPage: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { isActive: isTourActive, completeTour, skipTour, startTour, hasCompletedTour } = useOnboardingTour();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -749,12 +746,7 @@ const JobsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Onboarding Tour */}
-      <OnboardingTour
-        isOpen={isTourActive}
-        onClose={skipTour}
-        onComplete={completeTour}
-      />
+
     </div>
   );
 };
