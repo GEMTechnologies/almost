@@ -66,29 +66,32 @@ const Header: React.FC = () => {
         return;
       }
       
-      // If search engine doesn't have country yet, try direct detection
-      const response = await fetch('https://ipapi.co/json/', {
-        headers: {
-          'Accept': 'application/json',
-        }
-      });
+      // Use timezone-based detection as fallback (no network required)
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      let detectedCountry = 'Global';
+      let detectedFlag = '🌍';
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Simple timezone to country mapping for common cases
+      if (timeZone.includes('Africa')) {
+        detectedCountry = 'Uganda';
+        detectedFlag = '🇺🇬';
+      } else if (timeZone.includes('America')) {
+        detectedCountry = 'United States';
+        detectedFlag = '🇺🇸';
+      } else if (timeZone.includes('Europe')) {
+        detectedCountry = 'United Kingdom';
+        detectedFlag = '🇬🇧';
+      } else if (timeZone.includes('Asia')) {
+        detectedCountry = 'Global Asia';
+        detectedFlag = '🌏';
       }
       
-      const data = await response.json();
+      setUserCountry(detectedCountry);
+      setCountryFlag(detectedFlag);
+      console.log('User country detected:', detectedCountry);
       
-      if (data.country_name && data.country_code) {
-        setUserCountry(data.country_name);
-        setCountryFlag(getFlagEmoji(data.country_code));
-      } else {
-        // Fallback to default
-        setDefaultCountry();
-      }
     } catch (error) {
       console.warn('Country detection failed, using default:', error);
-      // Fallback to default country
       setDefaultCountry();
     }
   };
