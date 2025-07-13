@@ -264,6 +264,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Credit award endpoint for bonuses and rewards
+  app.post("/api/auth/award-credits", async (req, res) => {
+    try {
+      const { amount, reason } = req.body;
+      const userId = req.body.userId || 'demo-user-1'; // Get from session in real app
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ success: false, error: 'Invalid credit amount' });
+      }
+
+      // Get current user
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      
+      if (user.length === 0) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+
+      const currentCredits = user[0].credits || 0;
+      const newBalance = currentCredits + amount;
+      
+      // Award credits
+      await db.update(users)
+        .set({ credits: newBalance })
+        .where(eq(users.id, userId));
+
+      // Log the transaction
+      console.log(`Credits awarded: ${amount} for ${reason}. New balance: ${newBalance}`);
+
+      res.json({
+        success: true,
+        message: `${amount} credits awarded for ${reason}`,
+        newBalance,
+        awarded: amount,
+        reason
+      });
+    } catch (error) {
+      console.error('Failed to award credits:', error);
+      res.status(500).json({ success: false, error: 'Failed to award credits' });
+    }
+  });
+
   app.get("/api/credits/transactions", async (req, res) => {
     try {
       const userId = req.query.userId as string || 'demo-user-1';

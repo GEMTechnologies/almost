@@ -32,12 +32,17 @@ import {
   Share2,
   ExternalLink,
   DollarSign,
-  Zap
+  Zap,
+  HelpCircle
 } from 'lucide-react';
+import OnboardingTour from '../../components/OnboardingTour';
+import { useOnboardingTour } from '../../hooks/useOnboardingTour';
+import FinancialTipsTooltip from '../../components/FinancialTipsTooltip';
 
 const JobsPage: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { isActive: isTourActive, completeTour, skipTour, startTour, hasCompletedTour } = useOnboardingTour();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -224,7 +229,7 @@ const JobsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Section with Credit Balance */}
-      <div className="bg-gradient-to-r from-red-600 via-red-700 to-orange-600 text-white py-12 relative overflow-hidden">
+      <div id="header" className="bg-gradient-to-r from-red-600 via-red-700 to-orange-600 text-white py-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-black bg-opacity-10"></div>
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <div className="flex justify-between items-start mb-8">
@@ -239,7 +244,7 @@ const JobsPage: React.FC = () => {
             </div>
             
             {/* Credit Balance Card */}
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 text-center min-w-[180px]">
+            <div id="credit-balance" className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 text-center min-w-[180px]">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Sparkles className="w-5 h-5 text-yellow-300" />
                 <span className="text-sm font-medium">Your Credits</span>
@@ -247,32 +252,51 @@ const JobsPage: React.FC = () => {
               <div className="text-3xl font-bold text-yellow-300">
                 {user?.creditBalance || 0}
               </div>
-              <button 
-                onClick={() => window.location.href = '/credits'}
-                className="mt-2 bg-yellow-500 text-black px-3 py-1 rounded-lg text-sm font-semibold hover:bg-yellow-400 transition-colors"
-              >
-                Buy More
-              </button>
+              <FinancialTipsTooltip 
+                category="savings" 
+                position="bottom"
+                trigger={
+                  <button 
+                    onClick={() => window.location.href = '/credits'}
+                    className="mt-2 bg-yellow-500 text-black px-3 py-1 rounded-lg text-sm font-semibold hover:bg-yellow-400 transition-colors"
+                  >
+                    Buy More
+                  </button>
+                }
+              />
             </div>
           </div>
 
           {/* Real-time Sync Indicator */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <Database className={`w-4 h-4 ${isRefreshing ? 'animate-pulse text-yellow-300' : 'text-green-300'}`} />
-            <span className="text-sm text-white bg-black bg-opacity-20 px-3 py-1 rounded-full">
-              {isRefreshing ? 'Syncing with database...' : 'Live database sync active'}
-            </span>
-            <button 
-              onClick={refreshAllData}
-              className="ml-2 p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
-              disabled={isRefreshing}
-            >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <div className="flex items-center gap-2">
+              <Database className={`w-4 h-4 ${isRefreshing ? 'animate-pulse text-yellow-300' : 'text-green-300'}`} />
+              <span className="text-sm text-white bg-black bg-opacity-20 px-3 py-1 rounded-full">
+                {isRefreshing ? 'Syncing with database...' : 'Live database sync active'}
+              </span>
+              <button 
+                onClick={refreshAllData}
+                className="ml-2 p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+                disabled={isRefreshing}
+              >
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
+            
+            {hasCompletedTour && (
+              <button
+                onClick={startTour}
+                className="flex items-center gap-2 text-white bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-full text-sm font-medium transition-colors"
+                title="Restart onboarding tour"
+              >
+                <HelpCircle className="w-4 h-4" />
+                Take Tour Again
+              </button>
+            )}
           </div>
 
           {/* Search Section */}
-          <div className="bg-white rounded-lg p-6 shadow-lg">
+          <div id="search-section" className="bg-white rounded-lg p-6 shadow-lg">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
               <div className="md:col-span-2">
                 <div className="relative">
@@ -324,14 +348,20 @@ const JobsPage: React.FC = () => {
                   Advanced Search
                 </button>
                 
-                <button
-                  onClick={handlePremiumSearch}
-                  className="flex items-center gap-2 text-purple-600 hover:text-purple-700 bg-purple-50 px-3 py-2 rounded-lg border border-purple-200"
-                >
-                  <Zap className="w-4 h-4" />
-                  Premium Search
-                  <span className="bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full">5 Credits</span>
-                </button>
+                <FinancialTipsTooltip 
+                  category="credits" 
+                  position="top"
+                  trigger={
+                    <button
+                      onClick={handlePremiumSearch}
+                      className="flex items-center gap-2 text-purple-600 hover:text-purple-700 bg-purple-50 px-3 py-2 rounded-lg border border-purple-200"
+                    >
+                      <Zap className="w-4 h-4" />
+                      Premium Search
+                      <span className="bg-purple-600 text-white text-xs px-2 py-0.5 rounded-full">5 Credits</span>
+                    </button>
+                  }
+                />
               </div>
               
               <button
@@ -560,6 +590,7 @@ const JobsPage: React.FC = () => {
                               </button>
                             </div>
                             <button 
+                              id="premium-section"
                               onClick={() => checkCreditsAndExecute(10, 'Job Application', () => console.log('Applying to job...'))}
                               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 font-medium flex items-center gap-2"
                             >
@@ -579,7 +610,7 @@ const JobsPage: React.FC = () => {
           {/* Right Column - CV Library & Actions */}
           <div className="space-y-6">
             {/* CV Actions with Credit System */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
+            <div id="cv-tools" className="bg-white rounded-lg shadow-sm border p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-red-600" />
                 CV & Career Tools
@@ -591,25 +622,37 @@ const JobsPage: React.FC = () => {
                   <span className="bg-red-500 text-xs px-2 py-0.5 rounded-full">Free</span>
                 </button>
                 
-                <button 
-                  onClick={handleCVGeneration}
-                  className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  AI CV Generator
-                  <span className="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded-full font-bold">25 Credits</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                </button>
+                <FinancialTipsTooltip 
+                  category="career" 
+                  position="left"
+                  trigger={
+                    <button 
+                      onClick={handleCVGeneration}
+                      className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
+                    >
+                      <Sparkles className="w-5 h-5" />
+                      AI CV Generator
+                      <span className="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded-full font-bold">25 Credits</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    </button>
+                  }
+                />
                 
-                <button 
-                  onClick={handleHumanHelp}
-                  className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
-                >
-                  <User className="w-5 h-5" />
-                  Human Career Help
-                  <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">50 Credits</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                </button>
+                <FinancialTipsTooltip 
+                  category="strategy" 
+                  position="left"
+                  trigger={
+                    <button 
+                      onClick={handleHumanHelp}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white px-4 py-3 rounded-lg hover:from-emerald-700 hover:to-emerald-800 font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
+                    >
+                      <User className="w-5 h-5" />
+                      Human Career Help
+                      <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">50 Credits</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    </button>
+                  }
+                />
                 
                 <button className="w-full border border-gray-300 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-50 font-medium flex items-center justify-center gap-2">
                   <FileText className="w-5 h-5" />
@@ -705,6 +748,13 @@ const JobsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Onboarding Tour */}
+      <OnboardingTour
+        isOpen={isTourActive}
+        onClose={skipTour}
+        onComplete={completeTour}
+      />
     </div>
   );
 };
