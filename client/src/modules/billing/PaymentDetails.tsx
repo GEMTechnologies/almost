@@ -62,6 +62,15 @@ const PaymentDetails: React.FC = () => {
     setShowConfirmation(true);
   };
 
+  // Handle saved payment method clicks
+  const handleSavedMethodClick = async (savedMethodId: string, phoneNumber: string) => {
+    console.log('Saved payment method clicked:', { savedMethodId, phoneNumber });
+    
+    // Show confirmation popup with saved method details
+    setFormData(prev => ({ ...prev, phoneNumber }));
+    setShowConfirmation(true);
+  };
+
   const handleConfirmPayment = async () => {
     setLoading(true);
     
@@ -86,21 +95,47 @@ const PaymentDetails: React.FC = () => {
         }
       } else if (paymentMethod === 'mobile-money') {
         // For mobile money, use PesaPal
+        // Handle saved payment method for mobile money
+        const isSavedMethod = formData.phoneNumber.includes('***');
+        const actualPhoneNumber = isSavedMethod ? 
+          selectedSavedMethod?.phoneNumber || formData.phoneNumber : 
+          formData.phoneNumber;
+          
+        console.log('Processing PesaPal mobile money payment:', {
+          isSavedMethod,
+          phoneNumber: actualPhoneNumber,
+          amount: packageData?.price,
+          packageId
+        });
+
         const response = await fetch('/api/pesapal/order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: packageData?.price?.toString() || "10",
             currency: "UGX",
-            phone_number: formData.phoneNumber,
-            email_address: "user@example.com",
-            first_name: "Customer",
-            last_name: "User"
+            description: `Granada Credits - ${packageData?.name || 'Package'}`,
+            phone_number: actualPhoneNumber,
+            email_address: formData.email || "user@example.com",
+            first_name: formData.fullName?.split(' ')[0] || "Customer",
+            last_name: formData.fullName?.split(' ')[1] || "User",
+            package_id: packageId,
+            credits: packageData?.credits || 0,
+            user_id: 'demo-user-1',
+            saved_method_id: isSavedMethod ? selectedSavedMethod?.id : null
           })
         });
         
         const orderData = await response.json();
         if (orderData.success && orderData.redirect_url) {
+          // Log transaction details for database sync
+          console.log('PesaPal transaction initiated:', {
+            transactionId: orderData.transaction_id,
+            orderTrackingId: orderData.order_tracking_id,
+            phoneNumber: formData.phoneNumber,
+            amount: packageData?.price
+          });
+          
           // Redirect to PesaPal
           window.location.href = orderData.redirect_url;
           return;
@@ -225,6 +260,7 @@ const PaymentDetails: React.FC = () => {
               <div className="space-y-2">
                 <motion.div 
                   whileHover={{ scale: 1.01 }}
+                  onClick={() => handleSavedMethodClick('mtn_saved_1', '+256701234567')}
                   className="flex items-center justify-between p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-300 bg-slate-50"
                 >
                   <div className="flex items-center">
@@ -241,6 +277,7 @@ const PaymentDetails: React.FC = () => {
                 
                 <motion.div 
                   whileHover={{ scale: 1.01 }}
+                  onClick={() => handleSavedMethodClick('airtel_saved_1', '+256705678123')}
                   className="flex items-center justify-between p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-300"
                 >
                   <div className="flex items-center">

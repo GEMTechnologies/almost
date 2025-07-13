@@ -11,6 +11,7 @@ import { registerPaymentRoutes } from "./modules/payments/paymentRoutes";
 import documentWritingRoutes from "./routes/documentWriting";
 import documentUploadRoutes from "./routes/documentUpload";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+import { createPesaPalOrder, handlePesaPalCallback, handlePesaPalIPN } from "./pesapal";
 
 import { proposals, donorOpportunities, paymentTransactions, savedPaymentMethods } from "../shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
@@ -46,6 +47,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/paypal/order/:orderID/capture", async (req, res) => {
     await capturePaypalOrder(req, res);
+  });
+  
+  // PesaPal payment routes with complete API 3.0 integration
+  app.post("/api/pesapal/order", async (req, res) => {
+    await createPesaPalOrder(req, res);
+  });
+  
+  app.get("/api/pesapal/callback", async (req, res) => {
+    await handlePesaPalCallback(req, res);
+  });
+  
+  app.get("/api/pesapal/ipn", async (req, res) => {
+    await handlePesaPalIPN(req, res);
   });
   
   // Saved Payment Methods routes
