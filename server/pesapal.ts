@@ -317,7 +317,7 @@ export async function handlePesaPalCallback(req: Request, res: Response) {
       
       // TODO: Update database transaction status
       
-      res.redirect(`/purchase/${OrderMerchantReference}/failed?transaction_id=${transaction_id}&status=${result.payment_status_description}`);
+      res.redirect(`/purchase/${OrderMerchantReference}/failure?transaction_id=${transaction_id}&status=${result.payment_status_description}&error=${encodeURIComponent(result.payment_status_description || 'Payment processing failed')}&amount=${result.amount || 0}`);
     }
 
   } catch (error) {

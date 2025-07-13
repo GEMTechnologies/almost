@@ -61,6 +61,8 @@ import HumanHelpButton from './shared/HumanHelpButton';
 
 // Professional Receipt System
 import ReceiptDemo from './pages/ReceiptDemo';
+import PesaPalSuccess from './pages/PesaPalSuccess';
+import PaymentFailure from './pages/PaymentFailure';
 
 import AddictionProvider from './contexts/AddictionContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -194,7 +196,8 @@ function App() {
                   {/* Multi-step Purchase Flow */}
                   <Route path="/purchase/:packageId/method" element={<PaymentMethodSelection />} />
                   <Route path="/purchase/:packageId/details" element={<PaymentDetails />} />
-                  <Route path="/purchase/:packageId/success" element={<PaymentSuccess />} />
+                  <Route path="/purchase/:packageId/success" element={<PesaPalSuccess />} />
+                  <Route path="/purchase/:packageId/failure" element={<PaymentFailure />} />
                   
                   {/* Beautiful Receipt System */}
                   <Route path="/receipt-demo" element={<ReceiptDemo />} />

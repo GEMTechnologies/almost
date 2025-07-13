@@ -37,18 +37,31 @@ export default function PesaPalSuccess() {
     setShowReceipt(true);
   };
 
+  // Package information based on packageId
+  const getPackageInfo = (id: string) => {
+    switch(id) {
+      case 'starter': return { name: 'Starter Package', credits: 50, amount: 9.99 };
+      case 'professional': return { name: 'Professional Package', credits: 150, amount: 24.99 };
+      case 'enterprise': return { name: 'Enterprise Package', credits: 400, amount: 59.99 };
+      case 'unlimited': return { name: 'Unlimited Pro Package', credits: 1000, amount: 99.99 };
+      default: return { name: 'Basic Package', credits: 50, amount: 10.00 };
+    }
+  };
+
+  const packageInfo = getPackageInfo(packageId || 'basic');
+
   const receiptData = {
-    transactionId: transactionId || 'DEMO_' + Date.now(),
-    packageName: 'Professional Package',
-    amount: parseFloat(amount || '24.99'),
+    transactionId: transactionId || orderTrackingId || 'TXN_' + Date.now(),
+    packageName: packageInfo.name,
+    amount: parseFloat(amount || packageInfo.amount.toString()),
     currency: 'USD',
-    credits: 150,
+    credits: packageInfo.credits,
     paymentMethod: 'Mobile Money (PesaPal)',
     customerName: 'Demo User',
-    customerEmail: 'demo@granadaos.com',
+    customerEmail: 'demo@granadaglobal.com',
     customerPhone: '+256760195194',
     date: new Date().toISOString(),
-    organizationName: 'Granada Foundation',
+    organizationName: 'Granada Global Tech Ltd',
     userType: 'NGO'
   };
 
@@ -72,21 +85,39 @@ export default function PesaPalSuccess() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-950 dark:to-green-950 flex items-center justify-center p-4">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-950 dark:to-green-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated success celebration background */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(30)].map((_, i) => (
           <div
             key={i}
             className="absolute animate-bounce"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
+              animationDelay: `${Math.random() * 4}s`,
+              animationDuration: `${2 + Math.random() * 3}s`
             }}
           >
             <Sparkles className="w-4 h-4 text-emerald-400 opacity-60" />
+          </div>
+        ))}
+        
+        {/* Floating money and success icons */}
+        {animationComplete && [...Array(15)].map((_, i) => (
+          <div
+            key={`float-${i}`}
+            className="absolute animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.2}s`,
+              animationDuration: '3s'
+            }}
+          >
+            <div className="text-2xl">
+              {['💰', '🎉', '✨', '🚀', '💎'][Math.floor(Math.random() * 5)]}
+            </div>
           </div>
         ))}
       </div>
@@ -120,23 +151,26 @@ export default function PesaPalSuccess() {
         </div>
 
         {/* Success Message */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Payment Successful! 🎉
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          🎉 PAYMENT SUCCESS! 🎉
         </h1>
         
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
-          Your PesaPal payment has been processed successfully. Credits have been added to your account!
+        <p className="text-gray-600 dark:text-gray-300 mb-2">
+          Congratulations! Your PesaPal payment was processed successfully. 
+          <span className="font-bold text-emerald-600"> {packageInfo.credits} credits</span> are now in your account!
         </p>
+
+        <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white p-3 rounded-lg mb-6 animate-pulse">
+          <p className="font-bold">🚀 You're now ready to secure funding!</p>
+          <p className="text-sm">Granada Global Tech Ltd - Powering Success from Soroti, Uganda</p>
+        </div>
 
         {/* Transaction Details */}
         <div className="bg-emerald-50 dark:bg-emerald-950 rounded-lg p-4 mb-6 space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-600 dark:text-gray-400">Package:</span>
             <span className="font-semibold text-emerald-700 dark:text-emerald-300">
-              {packageId === 'starter' && 'Starter - 50 Credits'}
-              {packageId === 'professional' && 'Professional - 150 Credits'}
-              {packageId === 'enterprise' && 'Enterprise - 400 Credits'}
-              {packageId === 'unlimited' && 'Unlimited Pro - 1000 Credits'}
+              {packageInfo.name} - {packageInfo.credits} Credits
             </span>
           </div>
           
@@ -182,43 +216,70 @@ export default function PesaPalSuccess() {
           </div>
         </div>
 
+        {/* Achievement Unlocked */}
+        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4 rounded-lg mb-6 transform animate-bounce">
+          <div className="flex items-center justify-center gap-2">
+            <div className="text-2xl">🏆</div>
+            <div>
+              <p className="font-bold">ACHIEVEMENT UNLOCKED!</p>
+              <p className="text-sm">Smart Investor - Secured {packageInfo.credits} Credits</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Next Steps Motivation */}
+        <div className="bg-emerald-50 dark:bg-emerald-950 rounded-lg p-4 mb-6">
+          <h3 className="font-bold text-emerald-800 dark:text-emerald-200 mb-2">🚀 What's Next?</h3>
+          <div className="text-sm text-emerald-700 dark:text-emerald-300 space-y-1">
+            <p>✅ Generate AI-powered proposals</p>
+            <p>✅ Access premium funding opportunities</p>
+            <p>✅ Download professional receipts</p>
+            <p>✅ Get priority support from our Uganda team</p>
+          </div>
+        </div>
+
         {/* Action Buttons */}
         <div className="space-y-3">
           <button 
             onClick={handleShowReceipt}
-            className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
+            className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold py-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center animate-pulse"
           >
-            <Receipt className="w-4 h-4 mr-2" />
-            View Beautiful Receipt
+            <Receipt className="w-5 h-5 mr-2" />
+            📄 GET YOUR PROFESSIONAL RECEIPT
           </button>
           
           <button 
             onClick={handleContinue}
-            className="w-full border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950 py-3 rounded-lg transition-colors"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center"
           >
-            <Sparkles className="w-4 h-4 mr-2 inline" />
-            View My Credits
+            <Sparkles className="w-5 h-5 mr-2" />
+            🎯 START USING MY {packageInfo.credits} CREDITS
           </button>
           
-          <button 
-            onClick={handleBackToPackages}
-            className="w-full border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950 py-3 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 inline" />
-            Back to Packages
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button 
+              onClick={() => navigate('/credits')}
+              className="border-2 border-emerald-300 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center"
+            >
+              💎 More Credits
+            </button>
+            
+            <button 
+              onClick={() => navigate('/ngopipeline')}
+              className="border-2 border-purple-300 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center"
+            >
+              🛠️ AI Tools
+            </button>
+          </div>
         </div>
 
-        {/* Receipt Download */}
+        {/* Company Footer */}
         <div className="mt-6 pt-4 border-t border-emerald-200 dark:border-emerald-800">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download Receipt
-          </Button>
+          <p className="text-xs text-center text-emerald-600 dark:text-emerald-400">
+            Granada Global Tech Ltd<br/>
+            Amen A, Soroti, Eastern Region, Uganda<br/>
+            Postal Address: 290884 Soroti
+          </p>
         </div>
       </div>
     </div>
