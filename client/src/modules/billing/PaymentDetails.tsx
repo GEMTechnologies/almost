@@ -11,6 +11,7 @@ import {
   Sparkles,
   CheckCircle
 } from 'lucide-react';
+import PayPalButton from '../../components/PayPalButton';
 
 const PaymentDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -44,8 +45,7 @@ const PaymentDetails: React.FC = () => {
                 newFormData.cvv.length >= 3 && 
                 newFormData.cardName.length >= 2;
     } else if (paymentMethod === 'mobile-money') {
-      isValid = newFormData.phoneNumber.length >= 10 && 
-                newFormData.fullName.length >= 2;
+      isValid = newFormData.phoneNumber.length >= 10;
     } else if (paymentMethod === 'paypal') {
       isValid = newFormData.email.includes('@') && 
                 newFormData.email.length >= 5;
@@ -168,58 +168,117 @@ const PaymentDetails: React.FC = () => {
         
       case 'mobile-money':
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                placeholder="+256 700 000 000"
-                value={formData.phoneNumber}
-                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                required
-              />
+          <div className="space-y-6">
+            {/* Saved Mobile Payment Methods */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-slate-700">Saved Mobile Money</h4>
+              <div className="space-y-2">
+                <motion.div 
+                  whileHover={{ scale: 1.01 }}
+                  className="flex items-center justify-between p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-300 bg-slate-50"
+                >
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                      <Smartphone className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">MTN Mobile Money</div>
+                      <div className="text-xs text-slate-500">+256 701 ***567</div>
+                    </div>
+                  </div>
+                  <div className="text-xs text-emerald-600 font-medium">Default</div>
+                </motion.div>
+                
+                <motion.div 
+                  whileHover={{ scale: 1.01 }}
+                  className="flex items-center justify-between p-3 border border-slate-200 rounded-lg cursor-pointer hover:border-emerald-300"
+                >
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                      <Smartphone className="w-4 h-4 text-red-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">Airtel Money</div>
+                      <div className="text-xs text-slate-500">+256 705 ***123</div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                Full Name
-              </label>
-              <input
-                type="text"
-                placeholder="John Doe"
-                value={formData.fullName}
-                onChange={(e) => handleInputChange('fullName', e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                required
-              />
+
+            {/* Add New Mobile Money */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-medium text-slate-700 mb-3">Add New Mobile Money</h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Mobile Number
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      placeholder="+256 700 000 000"
+                      value={formData.phoneNumber}
+                      onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 pr-10 transition-all"
+                      required
+                    />
+                    {formData.phoneNumber.length >= 10 && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      >
+                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <Smartphone className="w-5 h-5 text-amber-600 mr-2 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-amber-800 font-medium mb-1">Mobile Money Payment</p>
+                      <p className="text-xs text-amber-700">
+                        You'll receive a prompt on your phone to authorize the payment. 
+                        Supported: MTN Mobile Money, Airtel Money, Uganda Telecom.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );
         
       case 'paypal':
         return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
-                PayPal Email
-              </label>
-              <input
-                type="email"
-                placeholder="john@example.com"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                required
-              />
-            </div>
-            
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
-                You'll be redirected to PayPal to complete your payment securely.
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+              <div className="flex items-center mb-4">
+                <DollarSign className="w-6 h-6 text-blue-600 mr-2" />
+                <h4 className="text-lg font-semibold text-blue-900">PayPal Secure Payment</h4>
+              </div>
+              <p className="text-sm text-blue-800 mb-6">
+                Click the PayPal button below to complete your payment securely through PayPal's platform.
               </p>
+              
+              {/* PayPal Button */}
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <PayPalButton 
+                    amount={packageData?.price?.toString() || "10"}
+                    currency="USD"
+                    intent="CAPTURE"
+                  />
+                </div>
+              </div>
+              
+              <div className="mt-4 text-xs text-blue-600 text-center">
+                <Shield className="w-4 h-4 inline mr-1" />
+                Protected by PayPal's secure payment processing
+              </div>
             </div>
           </div>
         );

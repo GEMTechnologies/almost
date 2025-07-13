@@ -10,8 +10,9 @@ import { storage } from "./modules/database/services/storage";
 import { registerPaymentRoutes } from "./modules/payments/paymentRoutes";
 import documentWritingRoutes from "./routes/documentWriting";
 import documentUploadRoutes from "./routes/documentUpload";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 
-import { proposals, donorOpportunities, paymentTransactions } from "../shared/schema";
+import { proposals, donorOpportunities, paymentTransactions, savedPaymentMethods } from "../shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -32,6 +33,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Document upload and management routes
   app.use("/api/document-upload", documentUploadRoutes);
+  
+  // PayPal payment routes
+  app.get("/api/paypal/setup", async (req, res) => {
+    await loadPaypalDefault(req, res);
+  });
+
+  app.post("/api/paypal/order", async (req, res) => {
+    // Request body should contain: { intent, amount, currency }
+    await createPaypalOrder(req, res);
+  });
+
+  app.post("/api/paypal/order/:orderID/capture", async (req, res) => {
+    await capturePaypalOrder(req, res);
+  });
+  
+  // Saved Payment Methods routes
+  app.get("/api/payment-methods", async (req, res) => {
+    try {
+      const userId = req.query.userId as string || 'demo-user-1';
+      const paymentMethods = await db.select()
+        .from(savedPaymentMethods)
+        .where(eq(savedPaymentMethods.userId, userId))
+        .orderBy(desc(savedPaymentMethods.isDefault), desc(savedPaymentMethods.lastUsed));
+      
+      res.json({ success: true, paymentMethods });
+    } catch (error) {
+      console.error('Failed to get payment methods:', error);
+      res.status(500).json({ success: false, error: 'Failed to retrieve payment methods' });
+    }
+  });
+
+  app.post("/api/payment-methods", async (req, res) => {
+    try {
+      const { userId, paymentType, displayName, phoneNumber, mobileProvider, cardholderName, lastFourDigits, cardType, expiryMonth, expiryYear, paypalEmail, isDefault } = req.body;
+      
+      // If setting as default, update all other methods to not be default
+      if (isDefault) {
+        await db.update(savedPaymentMethods)
+          .set({ isDefault: false })
+          .where(eq(savedPaymentMethods.userId, userId));
+      }
+      
+      const [newPaymentMethod] = await db.insert(savedPaymentMethods)
+        .values({
+          userId,
+          paymentType,
+          displayName,
+          phoneNumber,
+          mobileProvider,
+          cardholderName,
+          lastFourDigits,
+          cardType,
+          expiryMonth,
+          expiryYear,
+          paypalEmail,
+          isDefault: isDefault || false,
+          lastUsed: new Date()
+        })
+        .returning();
+      
+      res.json({ success: true, paymentMethod: newPaymentMethod });
+    } catch (error) {
+      console.error('Failed to save payment method:', error);
+      res.status(500).json({ success: false, error: 'Failed to save payment method' });
+    }
+  });
+
+  app.delete("/api/payment-methods/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.query.userId as string || 'demo-user-1';
+      
+      await db.delete(savedPaymentMethods)
+        .where(eq(savedPaymentMethods.id, id) && eq(savedPaymentMethods.userId, userId));
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Failed to delete payment method:', error);
+      res.status(500).json({ success: false, error: 'Failed to delete payment method' });
+    }
+  });
   
   // Credits and billing routes
   app.get("/api/credits/balance", async (req, res) => {

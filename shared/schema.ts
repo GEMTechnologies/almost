@@ -338,14 +338,31 @@ export const systemSettings = pgTable("system_settings", {
 export const savedPaymentMethods = pgTable("saved_payment_methods", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
-  cardholderName: text("cardholder_name").notNull(),
-  lastFourDigits: varchar("last_four_digits", { length: 4 }).notNull(),
-  cardType: text("card_type").notNull(), // visa, mastercard, amex, discover
-  expiryMonth: integer("expiry_month").notNull(),
-  expiryYear: integer("expiry_year").notNull(),
-  isDefault: boolean("is_default").default(false),
-  encryptedCardToken: text("encrypted_card_token").notNull(), // encrypted card details
+  paymentType: text("payment_type").notNull(), // 'card', 'mobile-money', 'paypal'
+  displayName: text("display_name").notNull(), // e.g., "Visa ending in 1234", "MTN 0701234567"
+  
+  // Card details (optional, only for cards)
+  cardholderName: text("cardholder_name"),
+  lastFourDigits: varchar("last_four_digits", { length: 4 }),
+  cardType: text("card_type"), // visa, mastercard, amex, discover
+  expiryMonth: integer("expiry_month"),
+  expiryYear: integer("expiry_year"),
   billingZip: varchar("billing_zip", { length: 10 }),
+  
+  // Mobile money details (optional, only for mobile money)
+  phoneNumber: text("phone_number"),
+  mobileProvider: text("mobile_provider"), // MTN, Airtel, etc.
+  
+  // PayPal details (optional, only for PayPal)
+  paypalEmail: text("paypal_email"),
+  
+  // Common fields
+  isDefault: boolean("is_default").default(false),
+  isActive: boolean("is_active").default(true),
+  encryptedToken: text("encrypted_token"), // encrypted payment details/tokens
+  processorCustomerId: text("processor_customer_id"),
+  
+  lastUsed: timestamp("last_used"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -463,6 +480,36 @@ export const couponUsage = pgTable("coupon_usage", {
   usedAt: timestamp("used_at").defaultNow()
 });
 
+
+
+// User settings and preferences
+export const userSettings = pgTable("user_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull().unique(),
+  
+  // Payment preferences
+  defaultPaymentMethodId: uuid("default_payment_method_id").references(() => savedPaymentMethods.id),
+  autoSavePaymentMethods: boolean("auto_save_payment_methods").default(true),
+  
+  // Notification preferences
+  emailNotifications: boolean("email_notifications").default(true),
+  smsNotifications: boolean("sms_notifications").default(false),
+  pushNotifications: boolean("push_notifications").default(true),
+  
+  // UI preferences
+  theme: text("theme").default("light"), // light, dark, auto
+  language: text("language").default("en"),
+  currency: text("currency").default("USD"),
+  timezone: text("timezone"),
+  
+  // Privacy settings
+  profileVisibility: text("profile_visibility").default("public"), // public, private, contacts
+  showPaymentHistory: boolean("show_payment_history").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -478,9 +525,15 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: z.string().min(6),
 });
 
+// Additional schemas for new tables
+export const insertSavedPaymentMethodSchema = createInsertSchema(savedPaymentMethods);
+export const insertUserSettingsSchema = createInsertSchema(userSettings);
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type SavedPaymentMethod = typeof savedPaymentMethods.$inferSelect;
-export type InsertSavedPaymentMethod = typeof savedPaymentMethods.$inferInsert;
+export type InsertSavedPaymentMethod = z.infer<typeof insertSavedPaymentMethodSchema>;
+export type UserSettings = typeof userSettings.$inferSelect;
+export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 export type PaymentTransaction = typeof paymentTransactions.$inferSelect;
 export type InsertPaymentTransaction = typeof paymentTransactions.$inferInsert;
