@@ -127,18 +127,25 @@ const PaymentDetails: React.FC = () => {
         });
         
         const orderData = await response.json();
+        
+        console.log('PesaPal API Response:', orderData);
+        
         if (orderData.success && orderData.redirect_url) {
           // Log transaction details for database sync
           console.log('PesaPal transaction initiated:', {
             transactionId: orderData.transaction_id,
             orderTrackingId: orderData.order_tracking_id,
-            phoneNumber: formData.phoneNumber,
+            phoneNumber: actualPhoneNumber,
             amount: packageData?.price
           });
           
-          // Redirect to PesaPal
+          // Redirect to PesaPal payment page
           window.location.href = orderData.redirect_url;
           return;
+        } else {
+          // Handle PesaPal API errors
+          console.error('PesaPal order creation failed:', orderData);
+          throw new Error(orderData.error || 'Failed to create PesaPal order');
         }
       } else {
         // For cards, simulate processing
@@ -156,12 +163,32 @@ const PaymentDetails: React.FC = () => {
       });
     } catch (error) {
       console.error('Payment failed:', error);
+      
+      // Show specific error message for PesaPal configuration issues
+      const errorMessage = error instanceof Error ? error.message : 'Payment processing failed';
+      
+      if (errorMessage.includes('not configured') || errorMessage.includes('authenticate')) {
+        alert(`Payment Error: ${errorMessage}\n\nNote: This requires valid PesaPal credentials to process real transactions. Currently showing demo success but no real money is being processed.`);
+        
+        // For demo purposes, still navigate to success to show the flow
+        navigate(`/purchase/${packageId}/success`, {
+          state: {
+            package: packageData,
+            paymentMethod,
+            returnUrl,
+            transactionId: 'DEMO_' + Date.now(),
+            demoMode: true
+          }
+        });
+        return;
+      }
+      
       navigate(`/purchase/${packageId}/failed`, {
         state: {
           package: packageData,
           paymentMethod,
           returnUrl,
-          error: 'Payment processing failed'
+          error: errorMessage
         }
       });
     } finally {

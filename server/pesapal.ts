@@ -40,6 +40,17 @@ async function getAuthToken(): Promise<string | null> {
 
     const data = await response.json();
     
+    console.log('PesaPal Auth Response:', {
+      url: `${PESAPAL_BASE_URL}/Auth/RequestToken`,
+      environment: process.env.NODE_ENV,
+      status: response.status,
+      response: data,
+      hasCredentials: {
+        consumer_key: !!PESAPAL_CONSUMER_KEY,
+        consumer_secret: !!PESAPAL_CONSUMER_SECRET
+      }
+    });
+    
     if (data.token) {
       console.log('PesaPal authentication successful:', {
         status: data.status,
@@ -102,10 +113,17 @@ export async function registerIPN(): Promise<string | null> {
 export async function createPesaPalOrder(req: Request, res: Response) {
   try {
     if (!isPesaPalConfigured) {
+      console.error('PesaPal credentials missing:', {
+        PESAPAL_CONSUMER_KEY: !!process.env.PESAPAL_CONSUMER_KEY,
+        PESAPAL_CONSUMER_SECRET: !!process.env.PESAPAL_CONSUMER_SECRET
+      });
       return res.status(400).json({
+        success: false,
         error: "PesaPal not configured. Please contact administrator to add PesaPal credentials.",
       });
     }
+
+    console.log('PesaPal is configured, processing order...');
 
     const { 
       amount, 
