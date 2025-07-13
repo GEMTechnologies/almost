@@ -280,16 +280,7 @@ const JobsPage: React.FC = () => {
               </button>
             </div>
             
-            {hasCompletedTour && (
-              <button
-                onClick={startTour}
-                className="flex items-center gap-2 text-white bg-white bg-opacity-20 hover:bg-opacity-30 px-3 py-1 rounded-full text-sm font-medium transition-colors"
-                title="Restart onboarding tour"
-              >
-                <HelpCircle className="w-4 h-4" />
-                Take Tour Again
-              </button>
-            )}
+
           </div>
 
           {/* Search Section */}
