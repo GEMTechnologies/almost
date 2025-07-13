@@ -39,16 +39,22 @@ router.post('/success', async (req, res) => {
       userId
     });
 
-    // Package credit mapping
-    const packageCredits = {
-      'basic': 50,
-      'starter': 50,
-      'professional': 150,
-      'enterprise': 400,
-      'unlimited': 1000
-    };
-
-    const creditsToAdd = packageCredits[packageId as keyof typeof packageCredits] || 50;
+    // Get package details from database for accurate credit calculation
+    const packageData = await db.execute(sql`
+      SELECT credits, bonus_credits, price FROM credit_packages 
+      WHERE id = ${packageId} AND is_active = true
+    `);
+    
+    if (packageData.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid package ID'
+      });
+    }
+    
+    const credits = packageData.rows[0].credits as number;
+    const bonusCredits = packageData.rows[0].bonus_credits as number || 0;
+    const creditsToAdd = credits + bonusCredits;
 
     // Start transaction
     await db.transaction(async (tx) => {

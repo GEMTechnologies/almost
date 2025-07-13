@@ -10,6 +10,7 @@ import { storage } from "./modules/database/services/storage";
 import { registerPaymentRoutes } from "./modules/payments/paymentRoutes";
 import documentWritingRoutes from "./routes/documentWriting";
 import documentUploadRoutes from "./routes/documentUpload";
+import creditPackagesRoutes from "./routes/credit-packages";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import paymentFlowRouter from './routes/payment-flow';
 import { createPesaPalOrder, handlePesaPalCallback, handlePesaPalIPN } from "./pesapal";
@@ -74,6 +75,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe Flow Integration  
   const stripeFlowRouter = (await import('./routes/stripe-flow')).default;
   app.use('/api/stripe-flow', stripeFlowRouter);
+
+  // Database-driven credit packages API
+  app.use("/api/credit-packages", creditPackagesRoutes);
 
   // Professional Receipt Generation
   app.post("/api/receipt/generate", generateReceipt);

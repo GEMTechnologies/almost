@@ -44,6 +44,9 @@ import CreditsPurchase from './modules/payment/CreditsPurchase';
 import CreditsPage from './modules/payment/CreditsPage';
 import PurchasePage from './modules/payment/PurchasePage';
 
+// Database-driven credits system
+import DatabaseDrivenCredits from './components/DatabaseDrivenCredits';
+
 // New Billing System
 import BillingSystem from './modules/billing/BillingSystem';
 import PaymentMethodSelection from './modules/billing/PaymentMethodSelection';
@@ -187,8 +190,9 @@ function App() {
                   <Route path="/documents" element={<Documents />} />
                   <Route path="/analytics" element={<Analytics />} />
                   
-                  {/* Credits Dashboard - Original System */}
-                  <Route path="/credits" element={<BillingSystem />} />
+                  {/* Credits Dashboard - Database Driven */}
+                  <Route path="/credits" element={<DatabaseDrivenCredits />} />
+                  <Route path="/credits-legacy" element={<BillingSystem />} />
                   <Route path="/credits/dashboard" element={<UserDashboard />} />
                   <Route path="/credits/history" element={<BillingHistory />} />
                   <Route path="/credits-mobile" element={<BillingSystem />} />
