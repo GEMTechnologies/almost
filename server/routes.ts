@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import aiRoutes from "./routes/ai";
 import adminRoutes from "./routes/admin";
 import billingRoutes from "./routes/billing";
+import jobsRoutes from "./routes/jobsRoutes";
 import { db } from "./db";
 import { users } from "../shared/schema";
 import { eq } from "drizzle-orm";
@@ -35,6 +36,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Document upload and management routes
   app.use("/api/document-upload", documentUploadRoutes);
+  
+  // Jobs platform routes with global location support
+  app.use("/api/jobs", jobsRoutes);
   
   // PayPal payment routes
   app.get("/api/paypal/setup", async (req, res) => {

@@ -527,9 +527,418 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: z.string().min(6),
 });
 
+// Global Jobs Platform Database Tables
+export const countries = pgTable("countries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  code: text("code").notNull().unique(), // ISO 3166-1 alpha-2 code
+  dialCode: text("dial_code"), // +1, +44, +256, etc.
+  currency: text("currency"), // USD, GBP, UGX, etc.
+  timezone: text("timezone"), // UTC offset
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const cities = pgTable("cities", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  countryId: uuid("country_id").references(() => countries.id).notNull(),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
+  isCapital: boolean("is_capital").default(false),
+  population: integer("population"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const companies = pgTable("companies", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  logo: text("logo"),
+  website: text("website"),
+  description: text("description"),
+  industry: text("industry"),
+  size: text("size"), // startup, small, medium, large, enterprise
+  
+  // Global Location Data
+  countryId: uuid("country_id").references(() => countries.id),
+  cityId: uuid("city_id").references(() => cities.id),
+  address: text("address"),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
+  
+  foundedYear: integer("founded_year"),
+  employeeCount: integer("employee_count"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  linkedinUrl: text("linkedin_url"),
+  twitterUrl: text("twitter_url"),
+  facebookUrl: text("facebook_url"),
+  
+  // Company Verification & Status
+  isVerified: boolean("is_verified").default(false),
+  verificationLevel: text("verification_level").default("basic"), // basic, verified, premium
+  isActive: boolean("is_active").default(true),
+  isPremium: boolean("is_premium").default(false),
+  
+  // SEO & Discovery
+  searchKeywords: text("search_keywords").array(),
+  benefits: text("benefits").array(),
+  culture: text("culture").array(),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const jobCategories = pgTable("job_categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  slug: text("slug").notNull().unique(),
+  parentId: uuid("parent_id").references(() => jobCategories.id),
+  icon: text("icon"),
+  color: text("color"),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const jobs = pgTable("jobs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  companyId: uuid("company_id").references(() => companies.id).notNull(),
+  categoryId: uuid("category_id").references(() => jobCategories.id),
+  
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description").notNull(),
+  requirements: text("requirements").array(),
+  responsibilities: text("responsibilities").array(),
+  benefits: text("benefits").array(),
+  skills: text("skills").array(),
+  
+  // Global Location Support
+  countryId: uuid("country_id").references(() => countries.id).notNull(),
+  cityId: uuid("city_id").references(() => cities.id),
+  isRemote: boolean("is_remote").default(false),
+  remoteType: text("remote_type"), // fully-remote, hybrid, on-site
+  timezoneRequirement: text("timezone_requirement"),
+  
+  // Job Details
+  jobType: text("job_type").notNull(), // full-time, part-time, contract, internship
+  experienceLevel: text("experience_level"), // entry, mid, senior, executive
+  educationLevel: text("education_level"), // high-school, bachelor, master, phd
+  
+  // Salary Information with Global Currency Support
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  salaryCurrency: text("salary_currency").default("USD"),
+  salaryPeriod: text("salary_period").default("monthly"), // hourly, monthly, yearly
+  isNegotiable: boolean("is_negotiable").default(false),
+  
+  // Application Process
+  applicationMethod: text("application_method").default("internal"), // internal, external, email
+  externalApplicationUrl: text("external_application_url"),
+  applicationEmail: text("application_email"),
+  deadline: timestamp("deadline"),
+  
+  // Job Management
+  postedBy: uuid("posted_by").references(() => users.id),
+  status: text("status").default("active"), // active, paused, filled, expired
+  isFeatured: boolean("is_featured").default(false),
+  isPremium: boolean("is_premium").default(false),
+  isUrgent: boolean("is_urgent").default(false),
+  
+  // Analytics
+  viewCount: integer("view_count").default(0),
+  applicationCount: integer("application_count").default(0),
+  clickCount: integer("click_count").default(0),
+  
+  // SEO & Search
+  searchKeywords: text("search_keywords").array(),
+  metaDescription: text("meta_description"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const cvProfiles = pgTable("cv_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  
+  // Personal Information
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  dateOfBirth: timestamp("date_of_birth"),
+  gender: text("gender"),
+  
+  // Global Location
+  countryId: uuid("country_id").references(() => countries.id),
+  cityId: uuid("city_id").references(() => cities.id),
+  address: text("address"),
+  isWillingToRelocate: boolean("is_willing_to_relocate").default(false),
+  
+  // Professional Information
+  professionalTitle: text("professional_title"),
+  summary: text("summary"),
+  objective: text("objective"),
+  skills: text("skills").array(),
+  certifications: jsonb("certifications"), // Array of certification objects
+  languages: jsonb("languages"), // Array of language objects with proficiency
+  
+  // Work Experience & Education
+  experience: jsonb("experience"), // Array of experience objects
+  education: jsonb("education"), // Array of education objects
+  projects: jsonb("projects"), // Array of project objects
+  achievements: jsonb("achievements"), // Array of achievement objects
+  
+  // References & Portfolio
+  references: jsonb("references"), // Array of reference objects
+  portfolio: jsonb("portfolio"), // Array of portfolio items
+  
+  // Social & Online Presence
+  avatar: text("avatar"),
+  linkedinUrl: text("linkedin_url"),
+  githubUrl: text("github_url"),
+  portfolioUrl: text("portfolio_url"),
+  personalWebsite: text("personal_website"),
+  
+  // Job Preferences with Global Support
+  desiredSalaryMin: integer("desired_salary_min"),
+  desiredSalaryMax: integer("desired_salary_max"),
+  desiredCurrency: text("desired_currency").default("USD"),
+  preferredJobType: text("preferred_job_type"), // full-time, part-time, contract
+  preferredWorkArrangement: text("preferred_work_arrangement"), // remote, hybrid, on-site
+  availability: text("availability"), // immediate, 2-weeks, 1-month, etc.
+  noticePeriod: text("notice_period"),
+  
+  // Privacy & Visibility
+  isPublic: boolean("is_public").default(true),
+  allowContactByRecruiters: boolean("allow_contact_by_recruiters").default(true),
+  allowContactByCompanies: boolean("allow_contact_by_companies").default(true),
+  isActive: boolean("is_active").default(true),
+  
+  // Analytics
+  viewCount: integer("view_count").default(0),
+  downloadCount: integer("download_count").default(0),
+  contactCount: integer("contact_count").default(0),
+  
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const jobApplications = pgTable("job_applications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobId: uuid("job_id").references(() => jobs.id).notNull(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  cvId: uuid("cv_id").references(() => cvProfiles.id),
+  
+  // Application Content
+  coverLetter: text("cover_letter"),
+  additionalDocuments: text("additional_documents").array(),
+  questionsAnswers: jsonb("questions_answers"), // Custom questions from employer
+  
+  // Application Status
+  status: text("status").notNull().default("pending"), // pending, reviewed, interviewed, hired, rejected, withdrawn
+  stage: text("stage").default("application"), // application, screening, interview, offer, final
+  
+  // Review Process
+  reviewedBy: uuid("reviewed_by").references(() => users.id),
+  reviewNotes: text("review_notes"),
+  interviewNotes: text("interview_notes"),
+  rejectionReason: text("rejection_reason"),
+  
+  // Scheduling
+  interviewDate: timestamp("interview_date"),
+  interviewType: text("interview_type"), // phone, video, in-person
+  interviewLocation: text("interview_location"),
+  
+  // Timestamps
+  appliedAt: timestamp("applied_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+  interviewedAt: timestamp("interviewed_at"),
+  respondedAt: timestamp("responded_at"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const jobSaves = pgTable("job_saves", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  jobId: uuid("job_id").references(() => jobs.id).notNull(),
+  notes: text("notes"),
+  savedAt: timestamp("saved_at").defaultNow(),
+});
+
+export const jobAlerts = pgTable("job_alerts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  
+  title: text("title").notNull(),
+  keywords: text("keywords").array(),
+  excludeKeywords: text("exclude_keywords").array(),
+  
+  // Global Location Filters
+  countryIds: text("country_ids").array(),
+  cityIds: text("city_ids").array(),
+  includeRemote: boolean("include_remote").default(true),
+  
+  // Job Filters
+  categoryIds: text("category_ids").array(),
+  jobTypes: text("job_types").array(),
+  experienceLevels: text("experience_levels").array(),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  currency: text("currency").default("USD"),
+  
+  // Notification Settings
+  frequency: text("frequency").default("daily"), // immediate, daily, weekly
+  lastSent: timestamp("last_sent"),
+  emailNotifications: boolean("email_notifications").default(true),
+  pushNotifications: boolean("push_notifications").default(false),
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const jobViews = pgTable("job_views", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobId: uuid("job_id").references(() => jobs.id).notNull(),
+  userId: uuid("user_id").references(() => users.id),
+  
+  // Analytics Data
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  sessionDuration: integer("session_duration"), // seconds
+  
+  // Geographic Data
+  countryId: uuid("country_id").references(() => countries.id),
+  cityId: uuid("city_id").references(() => cities.id),
+  
+  viewedAt: timestamp("viewed_at").defaultNow(),
+});
+
+export const cvDownloads = pgTable("cv_downloads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  cvId: uuid("cv_id").references(() => cvProfiles.id).notNull(),
+  downloadedBy: uuid("downloaded_by").references(() => users.id),
+  
+  // Context
+  jobId: uuid("job_id").references(() => jobs.id), // If downloaded from job application
+  companyId: uuid("company_id").references(() => companies.id),
+  
+  // Analytics
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  downloadType: text("download_type").default("pdf"), // pdf, doc, etc.
+  
+  downloadedAt: timestamp("downloaded_at").defaultNow(),
+});
+
+export const jobRecommendations = pgTable("job_recommendations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  jobId: uuid("job_id").references(() => jobs.id).notNull(),
+  
+  matchScore: integer("match_score"), // 0-100
+  reasons: text("reasons").array(),
+  algorithmVersion: text("algorithm_version"),
+  
+  // User Interactions
+  isViewed: boolean("is_viewed").default(false),
+  isClicked: boolean("is_clicked").default(false),
+  isApplied: boolean("is_applied").default(false),
+  isSaved: boolean("is_saved").default(false),
+  isDismissed: boolean("is_dismissed").default(false),
+  
+  // Feedback
+  userFeedback: text("user_feedback"), // helpful, not_helpful, not_interested
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  viewedAt: timestamp("viewed_at"),
+  clickedAt: timestamp("clicked_at"),
+});
+
+export const companyFollows = pgTable("company_follows", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  companyId: uuid("company_id").references(() => companies.id).notNull(),
+  
+  // Notification Preferences
+  jobAlerts: boolean("job_alerts").default(true),
+  companyNews: boolean("company_news").default(true),
+  
+  followedAt: timestamp("followed_at").defaultNow(),
+});
+
+export const jobFeedback = pgTable("job_feedback", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  jobId: uuid("job_id").references(() => jobs.id).notNull(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  
+  rating: integer("rating"), // 1-5 stars
+  feedback: text("feedback"),
+  categories: text("categories").array(), // job_description, salary, company, process
+  isAnonymous: boolean("is_anonymous").default(false),
+  isRecommended: boolean("is_recommended"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const jobSearchHistory = pgTable("job_search_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id),
+  
+  searchQuery: text("search_query"),
+  filters: jsonb("filters"), // All applied filters
+  resultsCount: integer("results_count"),
+  
+  // Analytics
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  
+  searchedAt: timestamp("searched_at").defaultNow(),
+});
+
+export const salaryInsights = pgTable("salary_insights", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  
+  // Global Location
+  countryId: uuid("country_id").references(() => countries.id).notNull(),
+  cityId: uuid("city_id").references(() => cities.id),
+  
+  // Job Details
+  jobTitle: text("job_title").notNull(),
+  categoryId: uuid("category_id").references(() => jobCategories.id),
+  experienceLevel: text("experience_level"),
+  
+  // Salary Data
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
+  salaryAverage: integer("salary_average"),
+  currency: text("currency").notNull(),
+  
+  // Sample Data
+  sampleSize: integer("sample_size").default(1),
+  dataSource: text("data_source"), // job_postings, user_reports, surveys
+  
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Additional schemas for new tables
 export const insertSavedPaymentMethodSchema = createInsertSchema(savedPaymentMethods);
 export const insertUserSettingsSchema = createInsertSchema(userSettings);
+export const insertCompanySchema = createInsertSchema(companies);
+export const insertJobSchema = createInsertSchema(jobs);
+export const insertCvProfileSchema = createInsertSchema(cvProfiles);
+export const insertJobApplicationSchema = createInsertSchema(jobApplications);
+export const insertCountrySchema = createInsertSchema(countries);
+export const insertCitySchema = createInsertSchema(cities);
+export const insertJobCategorySchema = createInsertSchema(jobCategories);
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -539,3 +948,19 @@ export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 export type PaymentTransaction = typeof paymentTransactions.$inferSelect;
 export type InsertPaymentTransaction = typeof paymentTransactions.$inferInsert;
+
+// Jobs Platform Types
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = z.infer<typeof insertCompanySchema>;
+export type Job = typeof jobs.$inferSelect;
+export type InsertJob = z.infer<typeof insertJobSchema>;
+export type CvProfile = typeof cvProfiles.$inferSelect;
+export type InsertCvProfile = z.infer<typeof insertCvProfileSchema>;
+export type JobApplication = typeof jobApplications.$inferSelect;
+export type InsertJobApplication = z.infer<typeof insertJobApplicationSchema>;
+export type Country = typeof countries.$inferSelect;
+export type InsertCountry = z.infer<typeof insertCountrySchema>;
+export type City = typeof cities.$inferSelect;
+export type InsertCity = z.infer<typeof insertCitySchema>;
+export type JobCategory = typeof jobCategories.$inferSelect;
+export type InsertJobCategory = z.infer<typeof insertJobCategorySchema>;

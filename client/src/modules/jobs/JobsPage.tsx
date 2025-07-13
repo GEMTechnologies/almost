@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
 import { 
   Briefcase,
   Building,
@@ -35,199 +36,97 @@ const JobsPage: React.FC = () => {
   const [showCVLibrary, setShowCVLibrary] = useState(false);
   const [activeTab, setActiveTab] = useState('latest');
 
-  // Company partners
-  const companies = [
-    { name: 'Uganda Airlines', logo: '🛫' },
-    { name: 'Airtel Uganda', logo: '📱' },
-    { name: 'MTN Uganda', logo: '📞' },
-    { name: 'Stanbic Bank', logo: '🏦' },
-    { name: 'DFCU Bank', logo: '💳' },
-    { name: 'Safaricom', logo: '📡' }
-  ];
-
-  // Job categories
-  const categories = [
-    'All Categories',
-    'Information Technology',
-    'Banking & Finance',
-    'Healthcare & Medical',
-    'Education & Training',
-    'Engineering',
-    'Sales & Marketing',
-    'Human Resources',
-    'Legal & Compliance',
-    'Customer Service',
-    'Operations & Logistics',
-    'Administration'
-  ];
-
-  // Location options
-  const locations = [
-    'All Locations',
-    'Kampala',
-    'Entebbe',
-    'Jinja',
-    'Mbarara',
-    'Gulu',
-    'Arua',
-    'Masaka',
-    'Soroti',
-    'Hoima',
-    'Lira',
-    'Remote'
-  ];
-
-  // Latest jobs
-  const latestJobs = [
-    {
-      id: 1,
-      title: 'Senior Software Engineer',
-      company: 'Tech Solutions Uganda',
-      location: 'Kampala',
-      type: 'Full-time',
-      salary: 'UGX 3,000,000 - 5,000,000',
-      posted: '2 days ago',
-      deadline: '15 Jan 2025',
-      description: 'We are looking for an experienced software engineer to join our growing team...',
-      requirements: ['Bachelor\'s degree in Computer Science', '3+ years experience', 'JavaScript, React, Node.js'],
-      logo: '💻'
-    },
-    {
-      id: 2,
-      title: 'Marketing Manager',
-      company: 'East Africa Marketing Ltd',
-      location: 'Kampala',
-      type: 'Full-time',
-      salary: 'UGX 2,500,000 - 4,000,000',
-      posted: '1 day ago',
-      deadline: '20 Jan 2025',
-      description: 'Join our dynamic marketing team and lead strategic campaigns across East Africa...',
-      requirements: ['Bachelor\'s in Marketing', '5+ years experience', 'Digital marketing expertise'],
-      logo: '📈'
-    },
-    {
-      id: 3,
-      title: 'Financial Analyst',
-      company: 'Uganda Investment Bank',
-      location: 'Kampala',
-      type: 'Full-time',
-      salary: 'UGX 2,000,000 - 3,500,000',
-      posted: '3 days ago',
-      deadline: '18 Jan 2025',
-      description: 'Analyze financial data and provide insights to support business decisions...',
-      requirements: ['CPA or ACCA qualification', '2+ years experience', 'Excel proficiency'],
-      logo: '💰'
-    },
-    {
-      id: 4,
-      title: 'Project Manager',
-      company: 'Development Partners International',
-      location: 'Kampala',
-      type: 'Contract',
-      salary: 'UGX 4,000,000 - 6,000,000',
-      posted: '1 week ago',
-      deadline: '25 Jan 2025',
-      description: 'Lead project implementation for development programs across Uganda...',
-      requirements: ['PMP certification preferred', '4+ years experience', 'NGO experience'],
-      logo: '📋'
-    },
-    {
-      id: 5,
-      title: 'Sales Executive',
-      company: 'Uganda Telecom',
-      location: 'Multiple Locations',
-      type: 'Full-time',
-      salary: 'UGX 1,500,000 - 2,500,000',
-      posted: '4 days ago',
-      deadline: '22 Jan 2025',
-      description: 'Drive sales growth and build customer relationships in telecom sector...',
-      requirements: ['Diploma in Sales/Marketing', '2+ years experience', 'Customer service skills'],
-      logo: '📞'
-    },
-    {
-      id: 6,
-      title: 'Data Scientist',
-      company: 'Uganda Bureau of Statistics',
-      location: 'Kampala',
-      type: 'Full-time',
-      salary: 'UGX 3,500,000 - 5,500,000',
-      posted: '5 days ago',
-      deadline: '30 Jan 2025',
-      description: 'Analyze large datasets to generate insights for national development...',
-      requirements: ['Master\'s in Statistics/Data Science', 'Python/R proficiency', 'Machine learning'],
-      logo: '📊'
+  // Fetch countries for global location support
+  const { data: countries = [] } = useQuery({
+    queryKey: ['/api/jobs/countries'],
+    queryFn: async () => {
+      const response = await fetch('/api/jobs/countries');
+      const data = await response.json();
+      return data.success ? data.countries : [];
     }
-  ];
+  });
 
-  // CV Library profiles
-  const cvProfiles = [
-    {
-      id: 1,
-      name: 'James Mugisha',
-      title: 'Senior Software Developer',
-      experience: '5 years',
-      location: 'Kampala',
-      skills: ['JavaScript', 'React', 'Node.js', 'Python'],
-      education: 'Bachelor\'s in Computer Science - Makerere University',
-      summary: 'Experienced software developer with expertise in full-stack development...',
-      avatar: '👨‍💻'
+  // Fetch cities based on selected country
+  const { data: cities = [] } = useQuery({
+    queryKey: ['/api/jobs/cities', selectedLocation],
+    queryFn: async () => {
+      if (!selectedLocation) return [];
+      const response = await fetch(`/api/jobs/cities/${selectedLocation}`);
+      const data = await response.json();
+      return data.success ? data.cities : [];
     },
-    {
-      id: 2,
-      name: 'Sarah Nakato',
-      title: 'Marketing Professional',
-      experience: '4 years',
-      location: 'Kampala',
-      skills: ['Digital Marketing', 'SEO', 'Content Creation', 'Analytics'],
-      education: 'Bachelor\'s in Marketing - Uganda Christian University',
-      summary: 'Creative marketing professional with proven track record in digital campaigns...',
-      avatar: '👩‍💼'
-    },
-    {
-      id: 3,
-      name: 'Peter Okello',
-      title: 'Financial Analyst',
-      experience: '3 years',
-      location: 'Entebbe',
-      skills: ['Financial Analysis', 'Excel', 'SAP', 'Risk Management'],
-      education: 'Bachelor\'s in Finance - Mbarara University',
-      summary: 'Detail-oriented financial analyst with strong analytical and problem-solving skills...',
-      avatar: '👨‍💼'
-    },
-    {
-      id: 4,
-      name: 'Grace Namuli',
-      title: 'Project Coordinator',
-      experience: '6 years',
-      location: 'Kampala',
-      skills: ['Project Management', 'Team Leadership', 'Budget Management', 'Reporting'],
-      education: 'Master\'s in Project Management - Kyambogo University',
-      summary: 'Experienced project coordinator with extensive NGO and development sector experience...',
-      avatar: '👩‍🏫'
-    },
-    {
-      id: 5,
-      name: 'Robert Ssemakula',
-      title: 'Sales Manager',
-      experience: '7 years',
-      location: 'Jinja',
-      skills: ['Sales Strategy', 'Team Management', 'Customer Relations', 'CRM'],
-      education: 'Bachelor\'s in Business Administration - Nkumba University',
-      summary: 'Results-driven sales manager with consistent track record of exceeding targets...',
-      avatar: '👨‍💻'
-    },
-    {
-      id: 6,
-      name: 'Mary Atim',
-      title: 'Data Analyst',
-      experience: '2 years',
-      location: 'Kampala',
-      skills: ['Python', 'SQL', 'Tableau', 'Statistical Analysis'],
-      education: 'Bachelor\'s in Statistics - Makerere University',
-      summary: 'Passionate data analyst with strong statistical background and programming skills...',
-      avatar: '👩‍💻'
+    enabled: !!selectedLocation
+  });
+
+  // Fetch job categories
+  const { data: categories = [] } = useQuery({
+    queryKey: ['/api/jobs/categories'],
+    queryFn: async () => {
+      const response = await fetch('/api/jobs/categories');
+      const data = await response.json();
+      return data.success ? data.categories : [];
     }
-  ];
+  });
+
+  // Fetch companies
+  const { data: companies = [] } = useQuery({
+    queryKey: ['/api/jobs/companies'],
+    queryFn: async () => {
+      const response = await fetch('/api/jobs/companies');
+      const data = await response.json();
+      return data.success ? data.companies : [];
+    }
+  });
+
+  // Fetch jobs with filters
+  const { data: jobsData, isLoading: jobsLoading } = useQuery({
+    queryKey: ['/api/jobs/jobs', searchQuery, selectedLocation, selectedCategory, activeTab],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('search', searchQuery);
+      if (selectedLocation) params.append('countryId', selectedLocation);
+      if (selectedCategory) params.append('categoryId', selectedCategory);
+      if (activeTab === 'featured') params.append('featured', 'true');
+      
+      const response = await fetch(`/api/jobs/jobs?${params}`);
+      const data = await response.json();
+      return data.success ? data : { jobs: [], pagination: {} };
+    }
+  });
+
+  // Fetch CV profiles
+  const { data: cvProfilesData } = useQuery({
+    queryKey: ['/api/jobs/cv-profiles'],
+    queryFn: async () => {
+      const response = await fetch('/api/jobs/cv-profiles');
+      const data = await response.json();
+      return data.success ? data : { cvProfiles: [] };
+    }
+  });
+
+  const jobs = jobsData?.jobs || [];
+  const cvLibraryProfiles = cvProfilesData?.cvProfiles || [];
+
+  // Initialize database if no data exists
+  const initializeDatabase = async () => {
+    try {
+      const response = await fetch('/api/jobs/init', { method: 'POST' });
+      const data = await response.json();
+      if (data.success) {
+        // Refetch data after initialization
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Failed to initialize database:', error);
+    }
+  };
+
+  // Check if we need to initialize data
+  useEffect(() => {
+    if (countries.length === 0 && categories.length === 0) {
+      initializeDatabase();
+    }
+  }, [countries.length, categories.length]);
 
   const handleSearch = () => {
     console.log('Searching for:', searchQuery, selectedLocation, selectedCategory);
@@ -269,8 +168,9 @@ const JobsPage: React.FC = () => {
                   onChange={(e) => setSelectedLocation(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900"
                 >
-                  {locations.map(location => (
-                    <option key={location} value={location}>{location}</option>
+                  <option value="">All Locations</option>
+                  {countries.map(country => (
+                    <option key={country.id} value={country.id}>{country.name}</option>
                   ))}
                 </select>
               </div>
@@ -281,8 +181,9 @@ const JobsPage: React.FC = () => {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900"
                 >
+                  <option value="">All Categories</option>
                   {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category.id} value={category.id}>{category.name}</option>
                   ))}
                 </select>
               </div>
@@ -334,7 +235,7 @@ const JobsPage: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-2xl font-bold text-gray-900">Latest Jobs</h2>
                   <div className="flex items-center gap-4">
-                    <span className="text-sm text-gray-600">{latestJobs.length} jobs found</span>
+                    <span className="text-sm text-gray-600">{jobs.length} jobs found</span>
                     <button className="text-red-600 hover:text-red-700 font-medium">
                       View All
                     </button>
@@ -366,26 +267,36 @@ const JobsPage: React.FC = () => {
               </div>
 
               <div className="divide-y divide-gray-200">
-                {latestJobs.map((job) => (
-                  <div key={job.id} className="p-6 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-2xl">
-                        {job.logo}
-                      </div>
-                      
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 hover:text-red-600 cursor-pointer">
-                              {job.title}
-                            </h3>
-                            <p className="text-red-600 font-medium">{job.company}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-gray-500 mb-1">{job.posted}</p>
-                            <p className="text-sm font-medium text-gray-900">{job.salary}</p>
-                          </div>
+                {jobsLoading ? (
+                  <div className="p-6 text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
+                    <p className="text-gray-500 mt-2">Loading jobs...</p>
+                  </div>
+                ) : jobs.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <p className="text-gray-500">No jobs found. Try adjusting your search criteria.</p>
+                  </div>
+                ) : (
+                  jobs.map((job) => (
+                    <div key={job.id} className="p-6 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-2xl">
+                          💼
                         </div>
+                        
+                        <div className="flex-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-900 hover:text-red-600 cursor-pointer">
+                                {job.title}
+                              </h3>
+                              <p className="text-red-600 font-medium">{job.companyName}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-gray-500 mb-1">{new Date(job.postedDate).toLocaleDateString()}</p>
+                              <p className="text-sm font-medium text-gray-900">{job.salaryRange}</p>
+                            </div>
+                          </div>
                         
                         <div className="flex items-center gap-4 mb-3 text-sm text-gray-600">
                           <div className="flex items-center gap-1">
@@ -394,11 +305,11 @@ const JobsPage: React.FC = () => {
                           </div>
                           <div className="flex items-center gap-1">
                             <Briefcase className="w-4 h-4" />
-                            {job.type}
+                            {job.jobType}
                           </div>
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            Deadline: {job.deadline}
+                            Deadline: {job.applicationDeadline ? new Date(job.applicationDeadline).toLocaleDateString() : 'Open'}
                           </div>
                         </div>
                         
@@ -407,7 +318,7 @@ const JobsPage: React.FC = () => {
                         </p>
                         
                         <div className="flex flex-wrap gap-2 mb-4">
-                          {job.requirements.slice(0, 3).map((req, index) => (
+                          {job.requirements && job.requirements.slice(0, 3).map((req, index) => (
                             <span key={index} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
                               {req}
                             </span>
@@ -429,10 +340,11 @@ const JobsPage: React.FC = () => {
                             Apply Now
                           </button>
                         </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -474,20 +386,20 @@ const JobsPage: React.FC = () => {
               </div>
 
               <div className="divide-y divide-gray-200">
-                {cvProfiles.slice(0, showCVLibrary ? cvProfiles.length : 3).map((profile) => (
+                {cvLibraryProfiles.slice(0, showCVLibrary ? cvLibraryProfiles.length : 3).map((profile) => (
                   <div key={profile.id} className="p-4 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-lg">
-                        {profile.avatar}
+                        👤
                       </div>
                       
                       <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">{profile.name}</h4>
-                        <p className="text-sm text-red-600">{profile.title}</p>
-                        <p className="text-xs text-gray-500 mb-2">{profile.experience} • {profile.location}</p>
+                        <h4 className="font-medium text-gray-900">{profile.fullName}</h4>
+                        <p className="text-sm text-red-600">{profile.professionalTitle}</p>
+                        <p className="text-xs text-gray-500 mb-2">{profile.yearsOfExperience} years • {profile.location}</p>
                         
                         <div className="flex flex-wrap gap-1 mb-2">
-                          {profile.skills.slice(0, 3).map((skill, index) => (
+                          {profile.skills && profile.skills.slice(0, 3).map((skill, index) => (
                             <span key={index} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
                               {skill}
                             </span>
