@@ -182,9 +182,6 @@ function App() {
                   <Route path="/documents" element={<Documents />} />
                   <Route path="/analytics" element={<Analytics />} />
                   
-                  {/* Beautiful Billing Page for Landing */}
-                  <Route path="/billing" element={<PackagesPage />} />
-                  
                   {/* Credits Dashboard - Original System */}
                   <Route path="/credits" element={<BillingSystem />} />
                   <Route path="/credits/dashboard" element={<UserDashboard />} />

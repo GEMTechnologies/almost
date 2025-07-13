@@ -494,7 +494,7 @@ const Header: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 onClick={() => {
-                  navigate('/billing');
+                  navigate('/credits');
                   setShowMobileMenu(false);
                 }}
                 className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-sm"
