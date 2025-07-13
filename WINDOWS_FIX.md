@@ -29,9 +29,9 @@ run-app.bat
 ```
 Or double-click `run-app.bat` in your project folder.
 
-**Option 2: Manual command**
+**Option 2: Manual command (Your preferred method)**
 ```
-set NODE_ENV=development && npx tsx server/index.ts
+npx tsx server/index.ts
 ```
 
 **Option 3: Install cross-env first**
