@@ -1,0 +1,92 @@
+
+
+    Pesapal.com
+    Developer
+
+    Noton
+    PCI/DSS Compliant
+
+    Forum
+    Introduction
+    Integration
+    API
+    Official Pesapal plugins
+
+Home / API / E-commerce / API 3.0 - JSON / API Reference	
+Pesapal API 3.0
+
+Welcome to Pesapal API 3.0. Getting started with Pesapal is quick and easy!
+
+In this release, you will learn how to use our API endpoints to access Pesapal services. Our APIs are built on REST(Representational State Transfer) thus our data entities are represented as HTTP resources and are accessed using HTTP verbs GET and POST. Requests and responses are JSON encoded.
+
+Find information about integrating your website with Pesapal. This documentation includes sample codes for each API we have.
+
+Postman URL: https://documenter.getpostman.com/view/6715320/UyxepTv1
+Base URLs
+Environment	URL
+Sandbox 	https://cybqa.pesapal.com/pesapalv3
+Live 	https://pay.pesapal.com/v3
+Error Object
+
+In case an error occurs during any API call, Pesapal will respond with a json string in the following format : -
+1
+	{
+2
+	    "error": {
+3
+	        "type": "error_type",
+4
+	        "code": "response_code",
+5
+	        "message": "Detailed error message goes here.."
+6
+	    }
+7
+	}
+← Previous
+Next →
+Is this article helpful?
+ Like24 6
+Share with Others
+Help & Contact
+Terms & Conditions
+Privacy Policy
+Security
+©2009-2017 PesaPal™, all rights reserved
+
+    Developer
+
+    Noton
+    PCI/DSS Compliant
+
+    Forum
+    Introduction
+    Integration
+    API
+        Point of sale (POS)
+            API Reference
+            Wireless Connection
+            Wired Connection
+        E-commerce
+            API 3.0 - JSON
+                API Reference
+                Authentication
+                RegisterIPNURL
+                GetIPNList
+                SubmitOrderRequest
+                GetTransactionStatus
+                RecurringPayments
+                RefundRequest
+                OrderCancellation
+                AdditionalEndpoints
+            API 2.0 - XML
+                Samples & Downloads
+                API Reference
+                Step By Step
+                IPN
+                PHP Sample
+                .Net Sample
+    Official Pesapal plugins
+        Download Plugins
+        Documentation
+

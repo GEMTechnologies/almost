@@ -1,0 +1,265 @@
+✅ 1. Donors Management Module
+🔹 Functions:
+
+    Add/Update/Delete Donor
+
+    Track Donations
+
+    Generate Receipts
+
+    Send Thank You / Appeal Emails
+
+    Create Donor Reports (top donors, frequent givers, etc.)
+
+🔹 Manages:
+
+    Donor profiles (individuals, corporates, institutions)
+
+    Donation history
+
+    Donor segmentation (by location, type, etc.)
+
+    Communication logs with donors
+
+✅ 2. Proposal & Grant Management Module
+🔹 Functions:
+
+    Create/edit/save proposals
+
+    Use standard proposal templates
+
+    Attach budgets, logframes, and documents
+
+    Submit to donors / grant portals
+
+    Track submission status
+
+🔹 Manages:
+
+    Project proposals (EU, UN, USAID format)
+
+    Grant applications & deadlines
+
+    Proposal components: budget, activities, outcomes
+
+    Donor submission reports
+
+✅ 3. Documentation & Policy Repository Module
+🔹 Functions:
+
+    Upload & categorize official NGO documents
+
+    Set document expiry/reminder dates
+
+    Version control & approval workflow
+
+    Generate compliance checklist
+
+    Download & share documents
+
+🔹 Manages (examples of documents stored):
+
+    ✅ Organizational Documents:
+
+        NGO Registration Certificate
+
+        Constitution / Articles of Association
+
+        Board Meeting Minutes
+
+    ✅ Policies & Manuals:
+
+        Procurement Policy
+
+        Anti-Sexual Harassment Policy
+
+        Code of Conduct
+
+        Child Protection Policy
+
+        Financial Policy Manual
+
+        Conflict of Interest Policy
+
+        Data Protection / GDPR Policy
+
+        AML/CFT (Anti-Money Laundering / Counter-Terrorism Financing)
+
+    ✅ Staff Documents:
+
+        Employment Contracts
+
+        Job Descriptions
+
+        Staff Code of Ethics
+
+        Training Records
+
+✅ 4. Project & Activity Management Module
+🔹 Functions:
+
+    Create/manage projects and activities
+
+    Assign team members
+
+    Track budgets and deliverables
+
+    Log outputs and outcomes
+
+    Attach documents, M&E reports
+
+🔹 Manages:
+
+    Project implementation timelines
+
+    Deliverables & milestones
+
+    Budget allocations per activity
+
+    Output reports (for donors)
+
+✅ 5. Monitoring & Evaluation (M&E) Module
+🔹 Functions:
+
+    Track indicators & targets
+
+    Input progress reports
+
+    Score performance (KPI-based)
+
+    Export evaluation summaries
+
+    Attach surveys, field reports
+
+🔹 Manages:
+
+    LogFrame indicators
+
+    Evaluation reports
+
+    Project assessments
+
+    Impact tracking
+
+✅ 6. Compliance & Risk Management Module
+🔹 Functions:
+
+    Auto-generate compliance checklist
+
+    Track expired/missing policies
+
+    Assign compliance tasks
+
+    Audit readiness dashboard
+
+    Upload risk register
+
+🔹 Manages:
+
+    NGO's risk registry
+
+    Legal & donor compliance
+
+    Policy enforcement tracking
+
+    Audit preparation files
+
+✅ 7. Volunteer & Staff Management Module
+🔹 Functions:
+
+    Register staff/volunteers
+
+    Assign roles/responsibilities
+
+    Upload HR files
+
+    Track performance appraisals
+
+    Send HR notifications
+
+🔹 Manages:
+
+    Staff directory
+
+    Volunteer hours
+
+    Staff policies and contracts
+
+    Safeguarding training records
+
+✅ 8. Financial Oversight & Reporting Module
+🔹 Functions:
+
+    Upload audited financials
+
+    Input income/expenditure reports
+
+    Track fund utilization
+
+    Export financial summaries
+
+    Attach receipts, invoices, and budgets
+
+🔹 Manages:
+
+    Annual financial reports
+
+    Donor fund breakdowns
+
+    Procurement & payment records
+
+    Petty cash logs
+
+✅ 9. Communications & Outreach Module
+🔹 Functions:
+
+    Send donor/staff/partner emails
+
+    Track outreach history
+
+    Design newsletter templates
+
+    Manage event communications
+
+🔹 Manages:
+
+    Contact groups
+
+    Campaign reports
+
+    Email logs
+
+    Outreach content library
+
+✅ 10. Templates & Tools Library
+🔹 Functions:
+
+    Upload/download templates
+
+    Standardize proposal formats
+
+    Provide policy templates
+
+    Training materials repository
+
+🔹 Includes:
+
+    Proposal templates (UN, EU, etc.)
+
+    Budget templates
+
+    Risk register template
+
+    M&E tools
+
+    HR forms (Leave, Appraisal, Onboarding)
+
+🟨 OPTIONAL FUTURE MODULES
+
+    🔸 Donor Portal (external access for donor self-service)
+
+    🔸 Beneficiary Registry
+
+    🔸 Event/Workshop Management
+
+    🔸 Feedback & Complaints System

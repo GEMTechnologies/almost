@@ -1,0 +1,166 @@
+ /ngopipeline — Full List of Submodules & Generators
+🖥️ 1. NGO Website Generator
+
+    Generate a basic website (React or WordPress)
+
+    Includes sections: About, Projects, Donate, Reports
+
+📄 2. Proposal Generator
+
+    Choose donor format (EU, UN, USAID)
+
+    Auto-fill: background, objectives, logframe, budget
+
+    Export in PDF or Word
+
+🧾 3. Policy Document Generator
+
+    Generate editable policies:
+
+        Code of Conduct
+
+        Anti-Sexual Harassment
+
+        Procurement Policy
+
+        Safeguarding Policy
+
+        Financial Policy
+
+        HR Manual
+
+        Data Protection Policy
+
+        Conflict of Interest Policy
+
+        Risk Management Policy
+
+        AML/CFT Policy
+
+💼 4. Branding Toolkit Generator
+
+    Auto-generate:
+
+        NGO Logo (basic)
+
+        Color palette
+
+        Fonts
+
+        Slogan/tagline suggestions
+
+        Social media banner templates
+
+🖋️ 5. Letterhead Generator
+
+    Custom letterhead with:
+
+        NGO logo, name, address, reg info
+
+        Footer/watermark options
+
+    Download as DOCX/PDF
+
+🪪 6. Staff ID & Business Card Generator
+
+    Create staff ID cards (with photo, title)
+
+    Generate business cards
+
+    Export print-ready designs
+
+📜 7. Certificate Generator
+
+    For:
+
+        Volunteer appreciation
+
+        Training completion
+
+        Staff recognition
+
+    Includes signature block & logo
+
+📅 8. Meeting Toolkit Generator
+
+    Auto-generate:
+
+        Agenda template
+
+        Meeting minutes format
+
+        Attendance sheet
+
+        Decision summary page
+
+🧾 9. Official Communication Templates
+
+    Auto-fill standard letters:
+
+        Grant request letters
+
+        Introductory NGO letters
+
+        Partnership MoUs
+
+        Offer/appointment letters
+
+        Thank-you letters to donors
+
+🔏 10. Signature Block & Stamp Generator
+
+    Generate digital signature blocks
+
+    Create branded NGO stamps (round or rectangle)
+
+    Insert into documents
+
+✅ 11. Compliance Checklist Builder
+
+    Generate donor-specific or legal checklists
+
+    E.g. USAID, EU, GIZ compliance
+
+    Track what's done, missing, expired
+
+📚 12. Template Library Downloader
+
+    Download:
+
+        Budget templates
+
+        Proposal templates
+
+        LogFrame matrix
+
+        M&E report formats
+
+        HR forms (leave, contract, appraisal)
+
+📊 13. Dashboard Starter Pack
+
+    Auto-configure dashboard widgets:
+
+        Donors, Projects, Compliance, Financials
+
+    Pre-set role-based permissions
+
+📂 14. PDF / Report Formatter
+
+    Upload content → get formatted PDF
+
+    Add cover, logo, footer, watermark
+
+    Choose between 3 design themes (e.g., formal, minimalist, corporate)
+
+🧑‍🏫 15. Training Toolkit Generator
+
+    Create training kits for:
+
+        Staff Induction
+
+        Child Protection
+
+        Ethics & Conduct
+
+    Includes PPT slides, handouts, certificates
