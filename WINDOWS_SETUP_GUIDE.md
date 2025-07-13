@@ -74,10 +74,20 @@ pip install -e .
 ### 4. Environment Variables Setup
 Create a `.env` file in the root directory:
 
-```env
-# Database
-DATABASE_URL=postgresql://username:password@localhost:5432/granada_os
+**IMPORTANT**: The DATABASE_URL is crucial. Here are the correct formats:
 
+For Neon Database (Recommended):
+```env
+# Database - Replace with your actual Neon connection string
+DATABASE_URL=postgresql://username:password@ep-example-12345.us-east-2.aws.neon.tech/neondb?sslmode=require
+
+For Local PostgreSQL:
+```env
+# Database - For local PostgreSQL installation
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/granada_os
+```
+
+```env
 # AI Services
 DEEPSEEK_API_KEY=your_deepseek_api_key_here
 OPENAI_API_KEY=your_openai_api_key_here
@@ -93,6 +103,30 @@ SENDGRID_API_KEY=your_sendgrid_api_key_here
 # Session Secret
 SESSION_SECRET=your_random_session_secret_here
 ```
+
+### FIXING YOUR CURRENT ERROR
+
+Your error shows `ENOTFOUND base` which means your DATABASE_URL has `base` as the hostname. To fix this:
+
+1. **Check your current `.env` file** - look for a line that starts with `DATABASE_URL=`
+2. **Replace the DATABASE_URL** with one of these formats:
+
+   **Option A: Use Neon Database (Easiest)**
+   - Go to https://neon.tech
+   - Create a free account
+   - Create a new project
+   - Copy the connection string (it will look like this):
+   ```
+   DATABASE_URL=postgresql://username:password@ep-example-12345.us-east-2.aws.neon.tech/neondb?sslmode=require
+   ```
+
+   **Option B: Use Local PostgreSQL**
+   ```
+   DATABASE_URL=postgresql://postgres:your_password@localhost:5432/granada_os
+   ```
+   (Replace `your_password` with the password you set during PostgreSQL installation)
+
+3. **Save the `.env` file** and try running `npm run db:push` again
 
 **Important**: Replace all placeholder values with your actual API keys and database connection string.
 
