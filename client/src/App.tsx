@@ -44,9 +44,6 @@ import CreditsPurchase from './modules/payment/CreditsPurchase';
 import CreditsPage from './modules/payment/CreditsPage';
 import PurchasePage from './modules/payment/PurchasePage';
 
-// Database-driven credits system
-import DatabaseDrivenCredits from './components/DatabaseDrivenCredits';
-
 // New Billing System
 import BillingSystem from './modules/billing/BillingSystem';
 import PaymentMethodSelection from './modules/billing/PaymentMethodSelection';
@@ -190,9 +187,8 @@ function App() {
                   <Route path="/documents" element={<Documents />} />
                   <Route path="/analytics" element={<Analytics />} />
                   
-                  {/* Credits Dashboard - Database Driven */}
-                  <Route path="/credits" element={<DatabaseDrivenCredits />} />
-                  <Route path="/credits-legacy" element={<BillingSystem />} />
+                  {/* Credits Dashboard - Original System */}
+                  <Route path="/credits" element={<BillingSystem />} />
                   <Route path="/credits/dashboard" element={<UserDashboard />} />
                   <Route path="/credits/history" element={<BillingHistory />} />
                   <Route path="/credits-mobile" element={<BillingSystem />} />
@@ -207,9 +203,8 @@ function App() {
                   <Route path="/receipt-demo" element={<ReceiptDemo />} />
                   
                   {/* Legacy routes */}
-                  <Route path="/purchase/:packageId" element={<CreditsPurchase />} />
+                  <Route path="/purchase/:packageId" element={<PurchasePage />} />
                   <Route path="/credits-purchase/:packageId" element={<CreditsPurchase />} />
-                  <Route path="/purchase-new/:packageId" element={<PurchasePage />} />
                   <Route path="/ngo-pipeline" element={<NGOPipeline />} />
                 </Routes>
               </main>

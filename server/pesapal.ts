@@ -188,10 +188,10 @@ export async function createPesaPalOrder(req: Request, res: Response) {
     
     const orderData = {
       id: orderId,
-      currency: currency || 'USD',
+      currency: currency || 'UGX',
       amount: parseFloat(amount),
-      description: description || 'Granada OS Credit Purchase - Supports Mobile Money & Credit Cards',
-      callback_url: `${process.env.BASE_URL || 'http://localhost:5000'}/api/pesapal/callback?transaction_id=${transactionId}&package_id=${package_id}`,
+      description: description || 'Granada OS Credit Purchase',
+      callback_url: `${process.env.BASE_URL || 'http://localhost:5000'}/api/pesapal/callback?transaction_id=${transactionId}`,
       notification_id: await registerIPN(),
       billing_address: {
         email_address: email_address,
@@ -303,68 +303,44 @@ export async function handlePesaPalCallback(req: Request, res: Response) {
     });
     
     if (result.payment_status_description === 'Completed') {
-      // Payment successful - update database via API call
+      // Payment successful - update database and redirect to success page
       console.log('Payment completed successfully - processing credit allocation');
       
       try {
-        const successResponse = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/payment-flow/success`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            transactionId: transaction_id,
-            orderTrackingId: OrderTrackingId,
-            packageId: req.query.package_id as string || 'basic',
-            amount: result.amount?.toString() || '0',
-            currency: result.currency || 'USD',
-            paymentMethod: 'pesapal',
-            processorType: 'pesapal',
-            userId: 'demo_user',
-            customerName: 'Demo User',
-            customerEmail: 'demo@granadaos.com',
-            customerPhone: '+256760195194'
-          })
+        // Get package details to determine credit amount
+        const packageResponse = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/credit-packages/${OrderMerchantReference}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
         });
         
-        const successResult = await successResponse.json();
-        console.log('Database updated for successful payment:', successResult);
+        if (packageResponse.ok) {
+          const packageData = await packageResponse.json();
+          const creditsToAdd = packageData.package.credits + (packageData.package.bonus_credits || 0);
+          
+          // Update user credits in database
+          const updateResponse = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/auth/update-credits`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: '00000000-0000-0000-0000-000000000001', // Demo user ID
+              credits: 2600 + creditsToAdd // Add to existing credits
+            })
+          });
+          
+          if (updateResponse.ok) {
+            console.log(`Successfully added ${creditsToAdd} credits to user account`);
+          }
+        }
       } catch (error) {
-        console.error('Failed to update database for successful payment:', error);
+        console.error('Failed to update credits:', error);
       }
       
       res.redirect(`/purchase/${OrderMerchantReference}/success?transaction_id=${transaction_id}&status=success&amount=${result.amount}`);
     } else {
-      // Payment failed or pending - update database via API call
+      // Payment failed or pending - update database and redirect accordingly
       console.log('Payment not completed:', result.payment_status_description);
       
-      try {
-        const failureResponse = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/payment-flow/failure`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            transactionId: transaction_id,
-            orderTrackingId: OrderTrackingId,
-            packageId: req.query.package_id as string || 'basic',
-            amount: result.amount?.toString() || '0',
-            currency: result.currency || 'USD',
-            paymentMethod: 'pesapal',
-            processorType: 'pesapal',
-            userId: 'demo_user',
-            errorMessage: result.payment_status_description || 'Payment processing failed',
-            customerName: 'Demo User',
-            customerEmail: 'demo@granadaos.com',
-            customerPhone: '+256760195194'
-          })
-        });
-        
-        const failureResult = await failureResponse.json();
-        console.log('Database updated for failed payment:', failureResult);
-      } catch (error) {
-        console.error('Failed to update database for failed payment:', error);
-      }
+      // TODO: Update database transaction status
       
       res.redirect(`/purchase/${OrderMerchantReference}/failure?transaction_id=${transaction_id}&status=${result.payment_status_description}&error=${encodeURIComponent(result.payment_status_description || 'Payment processing failed')}&amount=${result.amount || 0}`);
     }
@@ -432,12 +408,49 @@ export async function handlePesaPalIPN(req: Request, res: Response) {
     if (transactionStatus.payment_status_description === 'Completed') {
       console.log('Payment completed - processing credit allocation:', updateData);
       
-      // TODO: Database operations:
-      // 1. Update payment_transactions table with completed status
-      // 2. Add credits to user account 
-      // 3. Update saved payment method last used timestamp
-      // 4. Create credit_transactions record
-      // 5. Send confirmation email/notification
+      try {
+        // Extract package ID from merchant reference
+        const packageId = OrderMerchantReference;
+        
+        // Get package details to determine credit amount
+        const packageResponse = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/credit-packages/${packageId}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (packageResponse.ok) {
+          const packageData = await packageResponse.json();
+          const creditsToAdd = packageData.package.credits + (packageData.package.bonus_credits || 0);
+          
+          // Get current user credits
+          const userResponse = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/auth/profile`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            const currentCredits = userData.user.credits || 0;
+            const newCredits = currentCredits + creditsToAdd;
+            
+            // Update user credits in database
+            const updateResponse = await fetch(`${process.env.BASE_URL || 'http://localhost:5000'}/api/auth/update-credits`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: userData.user.id,
+                credits: newCredits
+              })
+            });
+            
+            if (updateResponse.ok) {
+              console.log(`Successfully added ${creditsToAdd} credits. New balance: ${newCredits}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to process credit allocation:', error);
+      }
       
     } else if (transactionStatus.payment_status_description === 'Failed') {
       console.log('Payment failed - updating transaction record:', updateData);

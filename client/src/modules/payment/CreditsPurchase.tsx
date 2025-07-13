@@ -18,12 +18,11 @@ import {
   Award,
   Target,
   Gem,
-  CheckCircle2,
-  Sparkles
+  CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 interface PaymentMethod {
   id: string;
@@ -47,51 +46,42 @@ const CreditsPurchase: React.FC = () => {
   const [countryCode, setCountryCode] = useState('+254');
   const [showCountrySelector, setShowCountrySelector] = useState(false);
 
-  // Fetch package from database
-  const { data: packageData, isLoading: packageLoading, error: packageError } = useQuery({
-    queryKey: ['/api/credit-packages', packageId],
-    queryFn: async () => {
-      const response = await fetch(`/api/credit-packages/${packageId}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data.package;
+  const packages = {
+    'starter': { 
+      id: 'starter',
+      name: 'Starter Pack', 
+      credits: 100, 
+      price: 12, 
+      icon: <Target className="w-6 h-6" />,
+      color: 'from-blue-500 to-cyan-500' 
     },
-    enabled: !!packageId
-  });
-
-  const getPackageIcon = (id: string) => {
-    switch (id) {
-      case 'basic': return <Target className="w-6 h-6" />;
-      case 'starter': return <Sparkles className="w-6 h-6" />;
-      case 'professional': return <Crown className="w-6 h-6" />;
-      case 'enterprise': return <Award className="w-6 h-6" />;
-      case 'unlimited': return <Zap className="w-6 h-6" />;
-      default: return <Gem className="w-6 h-6" />;
+    'professional': { 
+      id: 'professional',
+      name: 'Professional Pack', 
+      credits: 575, 
+      price: 49, 
+      icon: <Crown className="w-6 h-6" />,
+      color: 'from-emerald-500 to-green-500' 
+    },
+    'premium': { 
+      id: 'premium',
+      name: 'Premium Plus Pack', 
+      credits: 1500, 
+      price: 89, 
+      icon: <Zap className="w-6 h-6" />,
+      color: 'from-purple-500 to-violet-500' 
+    },
+    'enterprise': { 
+      id: 'enterprise',
+      name: 'Enterprise Pack', 
+      credits: 4000, 
+      price: 199, 
+      icon: <Award className="w-6 h-6" />,
+      color: 'from-orange-500 to-red-500' 
     }
   };
 
-  const getPackageColor = (id: string) => {
-    switch (id) {
-      case 'basic': return 'from-blue-500 to-cyan-500';
-      case 'starter': return 'from-green-500 to-emerald-500';
-      case 'professional': return 'from-purple-500 to-violet-500';
-      case 'enterprise': return 'from-orange-500 to-red-500';
-      case 'unlimited': return 'from-pink-500 to-rose-500';
-      default: return 'from-gray-500 to-slate-500';
-    }
-  };
-
-  // Convert database package to component format
-  const selectedPackage = packageData ? {
-    id: packageData.id,
-    name: packageData.name,
-    credits: packageData.credits,
-    price: parseFloat(packageData.price.toString()),
-    icon: getPackageIcon(packageData.id),
-    color: getPackageColor(packageData.id)
-  } : null;
+  const selectedPackage = packages[packageId as keyof typeof packages];
 
   const countries = [
     { code: '+254', name: 'Kenya', flag: '🇰🇪' },
@@ -178,18 +168,7 @@ const CreditsPurchase: React.FC = () => {
     });
   };
 
-  if (packageLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 to-slate-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading package details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (packageError || !selectedPackage) {
+  if (!selectedPackage) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 to-slate-900 flex items-center justify-center">
         <div className="text-center text-white">

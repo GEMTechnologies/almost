@@ -10,9 +10,7 @@ import { storage } from "./modules/database/services/storage";
 import { registerPaymentRoutes } from "./modules/payments/paymentRoutes";
 import documentWritingRoutes from "./routes/documentWriting";
 import documentUploadRoutes from "./routes/documentUpload";
-import creditPackagesRoutes from "./routes/credit-packages";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
-import paymentFlowRouter from './routes/payment-flow';
 import { createPesaPalOrder, handlePesaPalCallback, handlePesaPalIPN } from "./pesapal";
 import { generateReceipt } from "./services/receiptGenerator";
 
@@ -63,88 +61,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/pesapal/ipn", async (req, res) => {
     await handlePesaPalIPN(req, res);
-  });
-
-  // Payment Flow Database Integration
-  app.use('/api/payment-flow', paymentFlowRouter);
-  
-  // PayPal Flow Integration
-  const paypalFlowRouter = (await import('./routes/paypal-flow')).default;
-  app.use('/api/paypal-flow', paypalFlowRouter);
-  
-  // Stripe Flow Integration  
-  const stripeFlowRouter = (await import('./routes/stripe-flow')).default;
-  app.use('/api/stripe-flow', stripeFlowRouter);
-
-  // Database-driven credit packages API
-  app.use("/api/credit-packages", creditPackagesRoutes);
-  
-  // User profile and credits API for synchronization
-  app.get('/api/auth/profile', async (req, res) => {
-    try {
-      // Get demo user from database
-      let [user] = await db.select().from(users).where(eq(users.email, 'demo@granadaos.com')).limit(1);
-      
-      if (!user) {
-        // Create demo user if doesn't exist
-        [user] = await db.insert(users).values({
-          email: 'demo@granadaos.com',
-          hashedPassword: 'demo_password_hash',
-          fullName: 'Demo User',
-          firstName: 'Demo',
-          lastName: 'User',
-          credits: 2600,
-          userType: 'ngo',
-          isActive: true,
-          isBanned: false
-        }).returning();
-      }
-      
-      res.json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          fullName: user.fullName,
-          credits: user.credits,
-          userType: user.userType,
-          isActive: user.isActive,
-          isBanned: user.isBanned
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch user profile'
-      });
-    }
-  });
-  
-  // Update user credits
-  app.post('/api/auth/update-credits', async (req, res) => {
-    try {
-      const { userId, credits } = req.body;
-      
-      const [updatedUser] = await db
-        .update(users)
-        .set({ credits })
-        .where(eq(users.id, userId || '00000000-0000-0000-0000-000000000001'))
-        .returning();
-      
-      res.json({
-        success: true,
-        user: updatedUser
-      });
-    } catch (error) {
-      console.error('Error updating credits:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to update credits'
-      });
-    }
   });
 
   // Professional Receipt Generation

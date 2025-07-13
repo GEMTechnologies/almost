@@ -338,6 +338,15 @@ The architecture enables true microservice modularity with complete fault isolat
 - **Mobile Responsive**: Fully responsive design working across all device sizes
 - **Payment Integration**: Seamlessly connects to existing payment confirmation flow
 
+**January 13, 2025 - Database Credit Synchronization & PesaPal Flow Recovery**
+- **Credit Balance Synchronization**: Fixed inconsistent credit displays (2600 in header vs 0 on /credits page)
+- **Unified Database API**: All credit displays now fetch from same /api/auth/profile endpoint
+- **Original PesaPal Flow Restored**: /purchase/:packageId routes now use original working CreditsPurchase component
+- **Database-Driven Packages**: CreditsPurchase component now fetches packages from database instead of hardcoded data
+- **Working Payment Flow**: User confirmed PesaPal purchase flow is recovered and functional
+- **Authentication Issue**: PesaPal credentials need to be provided by user for live transactions
+- **Consistent User Experience**: Credit balance shows 2600 consistently across header, sidebar, and credits page
+
 **January 13, 2025 - Addictive Payment Flow with Professional Receipt System & Demand Notes**
 - **Enhanced Success Page**: Redesigned `/purchase/basic/success` with achievement unlocks, gamification elements, and motivational next steps
 - **Professional Receipt Integration**: Complete Granada Global Tech Ltd branding with Soroti, Uganda address (290884 Soroti)

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, Sparkles, ArrowLeft, Download, Receipt } from 'lucide-react';
 import ProfessionalReceipt from '@/components/ProfessionalReceipt';
@@ -9,10 +9,6 @@ export default function PesaPalSuccess() {
   const navigate = useNavigate();
   const [animationComplete, setAnimationComplete] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptData, setReceiptData] = useState(null);
-  const [creditsAdded, setCreditsAdded] = useState(0);
-  const [successMessage, setSuccessMessage] = useState('');
-  const paymentProcessed = useRef(false);
 
   const transactionId = searchParams.get('transaction_id');
   const orderTrackingId = searchParams.get('OrderTrackingId');
@@ -28,69 +24,6 @@ export default function PesaPalSuccess() {
 
     return () => clearTimeout(timer);
   }, []);
-
-  // Process payment success with database connection
-  useEffect(() => {
-    const processPaymentSuccess = async () => {
-      if (transactionId && !paymentProcessed.current) {
-        paymentProcessed.current = true;
-        
-        try {
-          console.log('Processing payment success with database:', {
-            transactionId,
-            orderTrackingId,
-            packageId,
-            amount,
-            status
-          });
-
-          // Call payment success endpoint
-          const response = await fetch('/api/payment-flow/success', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              transactionId,
-              orderTrackingId,
-              packageId: packageId || 'basic',
-              amount: amount || '10',
-              currency: 'USD',
-              paymentMethod: 'pesapal',
-              userId: 'demo_user',
-              customerName: 'Demo User',
-              customerEmail: 'demo@granadaos.com',
-              customerPhone: '+256760195194'
-            })
-          });
-
-          const result = await response.json();
-          
-          if (result.success) {
-            console.log('Payment success processed:', {
-              creditsAdded: result.creditsAdded,
-              transactionId: result.transactionId
-            });
-
-            // Update receipt data with real data from database
-            setReceiptData(result.receiptData);
-            setCreditsAdded(result.creditsAdded);
-
-            // Show success message
-            setSuccessMessage(`Payment Successful! ${result.creditsAdded} credits added to your account`);
-          } else {
-            console.error('Payment processing failed:', result);
-            setSuccessMessage(`Processing Error: ${result.error || "Failed to process payment"}`);
-          }
-        } catch (error) {
-          console.error('Payment success processing error:', error);
-          setSuccessMessage("Connection Error: Failed to connect to payment system");
-        }
-      }
-    };
-
-    processPaymentSuccess();
-  }, [transactionId, orderTrackingId, packageId, amount, status]);
 
   const handleContinue = () => {
     navigate('/credits');
@@ -117,13 +50,12 @@ export default function PesaPalSuccess() {
 
   const packageInfo = getPackageInfo(packageId || 'basic');
 
-  // Use database receipt data if available, otherwise fallback to package info
-  const finalReceiptData = receiptData || {
+  const receiptData = {
     transactionId: transactionId || orderTrackingId || 'TXN_' + Date.now(),
     packageName: packageInfo.name,
     amount: parseFloat(amount || packageInfo.amount.toString()),
     currency: 'USD',
-    credits: creditsAdded || packageInfo.credits,
+    credits: packageInfo.credits,
     paymentMethod: 'Mobile Money (PesaPal)',
     customerName: 'Demo User',
     customerEmail: 'demo@granadaglobal.com',
@@ -146,7 +78,7 @@ export default function PesaPalSuccess() {
             Back to Success Page
           </button>
           
-          <ProfessionalReceipt data={finalReceiptData} />
+          <ProfessionalReceipt data={receiptData} />
         </div>
       </div>
     );

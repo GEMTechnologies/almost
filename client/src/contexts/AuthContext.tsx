@@ -35,59 +35,30 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  
-  // Fetch user from database on load
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await fetch('/api/auth/profile');
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setUser({
-              id: data.user.id,
-              email: data.user.email,
-              firstName: data.user.firstName,
-              lastName: data.user.lastName,
-              fullName: data.user.fullName,
-              credits: data.user.credits,
-              userType: data.user.userType,
-              isActive: data.user.isActive,
-              isBanned: data.user.isBanned,
-              country: 'UG',
-              sector: 'Health',
-              organizationType: 'NGO',
-              isTrialUser: true,
-              trialDaysRemaining: 14,
-              createdAt: new Date(),
-              lastLogin: new Date()
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-        // Fallback to demo user if API fails
-        setUser({
-          id: 'demo_user',
-          email: 'demo@example.com',
-          firstName: 'Demo',
-          lastName: 'User',
-          userType: 'ngo',
-          country: 'UG',
-          sector: 'Health',
-          organizationType: 'NGO',
-          credits: 2600,
-          isActive: true,
-          isBanned: false,
-          createdAt: new Date(),
-          lastLogin: new Date()
-        });
-      }
-    };
+  const [user, setUser] = useState<User | null>(() => {
+    // Load user from localStorage or return default demo user
+    const savedUser = localStorage.getItem('granada_user');
+    if (savedUser) {
+      return JSON.parse(savedUser);
+    }
     
-    fetchUserProfile();
-  }, []);
+    // Return demo user for immediate functionality
+    return {
+      id: 'demo_user',
+      email: 'demo@example.com',
+      firstName: 'Demo',
+      lastName: 'User',
+      userType: 'ngo',
+      country: 'UG',
+      sector: 'Health',
+      organizationType: 'NGO',
+      credits: 1000,
+      isActive: true,
+      isBanned: false,
+      createdAt: new Date(),
+      lastLogin: new Date()
+    };
+  });
 
   const [creditHistory, setCreditHistory] = useState<CreditTransaction[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
