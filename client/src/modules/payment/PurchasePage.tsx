@@ -140,7 +140,7 @@ const PurchasePage: React.FC = () => {
     setPaymentStep('processing');
 
     try {
-      // Try PesaPal payment first
+      // Create payment with PesaPal using your original working flow
       const response = await fetch('/api/pesapal/order', {
         method: 'POST',
         headers: {
@@ -166,50 +166,26 @@ const PurchasePage: React.FC = () => {
         })
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Payment creation failed');
+      }
+
       const paymentData = await response.json();
       
-      // Handle PesaPal redirect
-      if (response.ok && paymentData.redirect_url) {
+      // Handle PesaPal redirect using your original flow
+      if (paymentData.redirect_url) {
         // Redirect to PesaPal payment page
         window.location.href = paymentData.redirect_url;
-        return;
-      }
-      
-      // If PesaPal failed due to configuration, show demo success
-      if (paymentData.error && paymentData.error.includes('PesaPal not configured')) {
-        // Demo mode - simulate successful payment
-        console.log('Demo mode: Simulating successful payment for database amounts');
-        
-        // Create demo transaction record
-        const demoResponse = await fetch('/api/payment-flow/success', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            packageId: selectedPackage.id,
-            amount: selectedPackage.price,
-            userId: user?.id || 'demo-user-1',
-            transactionId: 'DEMO_' + Date.now(),
-            status: 'completed'
-          })
-        });
-        
-        if (demoResponse.ok) {
-          // Navigate to success page with database amounts
-          navigate(`/purchase/${selectedPackage.id}/success?demo=true&amount=${selectedPackage.price}&credits=${selectedPackage.credits}&bonus=${selectedPackage.bonus || 0}`);
-        } else {
-          throw new Error('Demo transaction recording failed');
-        }
       } else {
-        throw new Error(paymentData.error || 'Payment creation failed');
+        throw new Error('No redirect URL received from PesaPal');
       }
       
     } catch (error: any) {
       console.error('Payment error:', error);
       setIsProcessing(false);
       setPaymentStep('method');
-      alert(`Payment failed: ${error.message}. For demo purposes, you can test with simulated payments.`);
+      alert(`Payment failed: ${error.message}. Please check your PesaPal credentials are set up correctly.`);
     }
   };
 
