@@ -38,8 +38,17 @@ const DatabaseDrivenCredits: React.FC = () => {
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
 
   // Fetch packages from database
-  const { data: packagesResponse, isLoading } = useQuery({
+  const { data: packagesResponse, isLoading, error } = useQuery({
     queryKey: ['/api/credit-packages'],
+    queryFn: async () => {
+      const response = await fetch('/api/credit-packages');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('API Response:', data);
+      return data;
+    },
     refetchInterval: 30000 // Refetch every 30 seconds to get DB updates
   });
 
@@ -49,6 +58,12 @@ const DatabaseDrivenCredits: React.FC = () => {
   });
 
   const packages = packagesResponse?.packages || [];
+
+  // Debug logging
+  console.log('Packages Response:', packagesResponse);
+  console.log('Packages Array:', packages);
+  console.log('Loading:', isLoading);
+  console.log('Error:', error);
 
   const getPackageIcon = (packageId: string) => {
     switch (packageId) {
@@ -90,6 +105,33 @@ const DatabaseDrivenCredits: React.FC = () => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading credit packages...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600">Error loading packages: {(error as Error).message}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-emerald-500 text-white rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!packages || packages.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-slate-600">No credit packages available</p>
+          <p className="text-sm text-slate-500 mt-2">Response: {JSON.stringify(packagesResponse)}</p>
         </div>
       </div>
     );
@@ -180,10 +222,10 @@ const DatabaseDrivenCredits: React.FC = () => {
                 {/* Price */}
                 <div className="text-center mb-6">
                   <div className="text-2xl font-bold text-emerald-600">
-                    ${pkg.price}
+                    ${typeof pkg.price === 'string' ? pkg.price : pkg.price.toFixed(2)}
                   </div>
                   <div className="text-slate-500 text-sm">
-                    ${(pkg.price / (pkg.credits + pkg.bonus_credits) * 100).toFixed(2)} per 100 credits
+                    ${(parseFloat(pkg.price.toString()) / (pkg.credits + pkg.bonus_credits) * 100).toFixed(2)} per 100 credits
                   </div>
                 </div>
 
