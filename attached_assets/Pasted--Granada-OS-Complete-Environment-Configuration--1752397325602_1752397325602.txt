@@ -1,0 +1,121 @@
+# ================================
+# Granada OS - Complete Environment Configuration
+# ================================
+
+# ================================
+# DATABASE CONFIGURATION (REQUIRED)
+# ================================
+# Get this from neon.tech (free PostgreSQL hosting)
+# Format: postgresql://username:password@host/database?sslmode=require
+# DATABASE_URL=postgresql://your_username:your_password@ep-example-123.us-east-1.aws.neon.tech/neondb?sslmode=require
+# REPLACE THIS WITH YOUR ACTUAL NEON DATABASE URL FROM neon.tech
+DATABASE_URL=postgresql://neondb_owner:npg_x5GSRcZXn2oI@ep-weathered-sunset-abjajybq-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require
+
+# Alternative for local PostgreSQL:
+# DATABASE_URL=postgresql://postgres:password@localhost:5432/granada_os
+
+# ================================
+# AI SERVICES (REQUIRED FOR CORE FEATURES)
+# ================================
+# DeepSeek API for proposal generation and AI writing
+DEEPSEEK_API_KEY=sk-a56c233e8fa64e0bb77a264fac2dd68a
+
+# OpenAI API (Optional - alternative AI service)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# ================================
+# SESSION & SECURITY (REQUIRED)
+# ================================
+# Generate a random string for session encryption
+SESSION_SECRET=granada_os_super_secret_key_2025_production_ready_12345abcdef
+
+# Environment setting
+NODE_ENV=development
+
+# ================================
+# PAYMENT SERVICES (OPTIONAL)
+# ================================
+# Stripe Configuration
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+VITE_STRIPE_PUBLIC_KEY=pk_test_your_stripe_public_key
+
+# PayPal Configuration
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+
+# Pesapal Configuration (African Mobile Money)
+PESAPAL_CONSUMER_KEY=your_pesapal_consumer_key
+PESAPAL_CONSUMER_SECRET=your_pesapal_consumer_secret
+
+# DodoPay Configuration
+DODOPAY_API_KEY=your_dodopay_api_key
+DODOPAY_SECRET_KEY=your_dodopay_secret_key
+
+# ================================
+# EMAIL SERVICES (OPTIONAL)
+# ================================
+# SendGrid for email notifications
+SENDGRID_API_KEY=SG.your_sendgrid_api_key
+
+# SMTP Configuration (Alternative to SendGrid)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+
+# ================================
+# EXTERNAL APIS (OPTIONAL)
+# ================================
+# Google Services
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# GitHub Integration
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# ================================
+# FILE STORAGE (OPTIONAL)
+# ================================
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_S3_BUCKET=your_s3_bucket_name
+AWS_REGION=us-east-1
+
+# Cloudinary Configuration (Alternative)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# ================================
+# MONITORING & ANALYTICS (OPTIONAL)
+# ================================
+# Analytics
+GOOGLE_ANALYTICS_ID=GA4-your_measurement_id
+
+# Error Tracking
+SENTRY_DSN=your_sentry_dsn
+
+# ================================
+# DEVELOPMENT SETTINGS
+# ================================
+# Port Configuration (defaults to 5000)
+PORT=5000
+
+# Enable detailed logging
+DEBUG=true
+
+# Frontend URL (for CORS)
+FRONTEND_URL=http://localhost:5000
+
+# API Base URL
+API_BASE_URL=http://localhost:5000/api
+
+# ================================
+# REPLIT SPECIFIC (AUTO-SET)
+# ================================
+# These are automatically set by Replit - don't change
+REPL_ID=auto_set_by_replit
+REPL_SLUG=auto_set_by_replit
+REPLIT_DOMAINS=auto_set_by_replit
