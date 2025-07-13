@@ -104,29 +104,48 @@ SENDGRID_API_KEY=your_sendgrid_api_key_here
 SESSION_SECRET=your_random_session_secret_here
 ```
 
-### FIXING YOUR CURRENT ERROR
+### FIXING YOUR CURRENT ERROR (URGENT)
 
 Your error shows `ENOTFOUND base` which means your DATABASE_URL has `base` as the hostname. To fix this:
 
-1. **Check your current `.env` file** - look for a line that starts with `DATABASE_URL=`
-2. **Replace the DATABASE_URL** with one of these formats:
+**IMMEDIATE FIX STEPS:**
 
-   **Option A: Use Neon Database (Easiest)**
-   - Go to https://neon.tech
-   - Create a free account
-   - Create a new project
-   - Copy the connection string (it will look like this):
+1. **Find your `.env` file** in `C:\Users\GMM\Documents\good (1)\good\.env`
+2. **Open it in Notepad** and look for `DATABASE_URL=`
+3. **Replace the entire DATABASE_URL line** with one of these:
+
+   **EASIEST OPTION: Use Neon Database (Free)**
+   - Visit: https://neon.tech
+   - Click "Sign Up" → Create account
+   - Click "Create Project" → Choose a name
+   - Copy the connection string (starts with `postgresql://`)
+   - Replace your DATABASE_URL with:
    ```
-   DATABASE_URL=postgresql://username:password@ep-example-12345.us-east-2.aws.neon.tech/neondb?sslmode=require
+   DATABASE_URL=postgresql://your_copied_connection_string_here
    ```
 
-   **Option B: Use Local PostgreSQL**
+   **LOCAL OPTION: Install PostgreSQL**
+   - Download: https://www.postgresql.org/download/windows/
+   - Install PostgreSQL (remember the password!)
+   - Open Command Prompt as Administrator, run:
+   ```
+   createdb granada_os
+   ```
+   - Set DATABASE_URL to:
    ```
    DATABASE_URL=postgresql://postgres:your_password@localhost:5432/granada_os
    ```
-   (Replace `your_password` with the password you set during PostgreSQL installation)
 
-3. **Save the `.env` file** and try running `npm run db:push` again
+4. **Save the `.env` file**
+5. **Try again:** `npm run db:push`
+
+**ALTERNATIVE: Skip Database Setup Initially**
+If you just want to test the app without database features:
+- Comment out the DATABASE_URL line in `.env` by adding `#` at the start:
+  ```
+  # DATABASE_URL=postgresql://...
+  ```
+- The app will run but database features won't work
 
 **Important**: Replace all placeholder values with your actual API keys and database connection string.
 
@@ -137,16 +156,35 @@ npm run db:push
 
 ## Running the Application
 
-### 1. Start the Main Application
+### Windows Users - You Have 4 Options:
+
+**Option 1: Simple Start (Recommended for Windows)**
+```bash
+start.bat
+```
+Or double-click the `start.bat` file in your project folder.
+
+**Option 2: With Python AI Services**
+```bash
+start-python.bat
+```
+This starts both Node.js and Python AI services.
+
+**Option 3: Using Cross-Env (After installing cross-env)**
 ```bash
 npm run dev
 ```
-This starts both the frontend (Vite) and backend (Express) servers.
+This now works on Windows because we installed cross-env.
 
-### 2. Start Python AI Services (Optional)
+**Option 4: Manual Windows Command**
+```bash
+set NODE_ENV=development && npx tsx server/index.ts
+```
+
+**Option 5: Start Python AI Service Separately**
 In a separate command prompt:
 ```bash
-python python_services/ai_proposal_writer.py
+python python_services/start_ai_writer.py
 ```
 
 ### 3. Access the Application
