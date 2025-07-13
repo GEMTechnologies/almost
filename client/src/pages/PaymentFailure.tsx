@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { AlertTriangle, RefreshCw, ArrowLeft, CreditCard, Phone, Mail, Clock } from 'lucide-react';
 
@@ -8,6 +8,9 @@ export default function PaymentFailure() {
   const navigate = useNavigate();
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes countdown
+  const [failureProcessed, setFailureProcessed] = useState(false);
+  const [failureMessage, setFailureMessage] = useState('');
+  const paymentProcessed = useRef(false);
 
   const transactionId = searchParams.get('transaction_id');
   const orderTrackingId = searchParams.get('OrderTrackingId');
@@ -28,6 +31,67 @@ export default function PaymentFailure() {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Process payment failure with database connection
+  useEffect(() => {
+    const processPaymentFailure = async () => {
+      if (transactionId && !paymentProcessed.current) {
+        paymentProcessed.current = true;
+        
+        try {
+          console.log('Processing payment failure with database:', {
+            transactionId,
+            orderTrackingId,
+            packageId,
+            errorMessage,
+            amount
+          });
+
+          // Call payment failure endpoint
+          const response = await fetch('/api/payment-flow/failure', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              transactionId,
+              orderTrackingId,
+              packageId: packageId || 'basic',
+              amount: amount || '10',
+              currency: 'USD',
+              paymentMethod: 'pesapal',
+              userId: 'demo_user',
+              errorMessage,
+              customerName: 'Demo User',
+              customerEmail: 'demo@granadaos.com',
+              customerPhone: '+256760195194'
+            })
+          });
+
+          const result = await response.json();
+          
+          if (result.success) {
+            console.log('Payment failure processed:', {
+              transactionId: result.transactionId,
+              retryCount: result.retryCount
+            });
+
+            setRetryAttempts(result.retryCount || 0);
+            setFailureProcessed(true);
+
+            // Show failure notification
+            setFailureMessage(`Payment Failed - Transaction recorded. Attempt #${result.retryCount || 1}`);
+          } else {
+            console.error('Payment failure processing failed:', result);
+          }
+        } catch (error) {
+          console.error('Payment failure processing error:', error);
+        }
+      }
+    };
+
+    processPaymentFailure();
+  }, [transactionId, orderTrackingId, packageId, errorMessage, amount]);
 
   // Package information
   const getPackageInfo = (id: string) => {

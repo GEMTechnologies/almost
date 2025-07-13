@@ -11,6 +11,7 @@ import { registerPaymentRoutes } from "./modules/payments/paymentRoutes";
 import documentWritingRoutes from "./routes/documentWriting";
 import documentUploadRoutes from "./routes/documentUpload";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
+import paymentFlowRouter from './routes/payment-flow';
 import { createPesaPalOrder, handlePesaPalCallback, handlePesaPalIPN } from "./pesapal";
 import { generateReceipt } from "./services/receiptGenerator";
 
@@ -62,6 +63,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/pesapal/ipn", async (req, res) => {
     await handlePesaPalIPN(req, res);
   });
+
+  // Payment Flow Database Integration
+  app.use('/api/payment-flow', paymentFlowRouter);
+  
+  // PayPal Flow Integration
+  const paypalFlowRouter = (await import('./routes/paypal-flow')).default;
+  app.use('/api/paypal-flow', paypalFlowRouter);
+  
+  // Stripe Flow Integration  
+  const stripeFlowRouter = (await import('./routes/stripe-flow')).default;
+  app.use('/api/stripe-flow', stripeFlowRouter);
 
   // Professional Receipt Generation
   app.post("/api/receipt/generate", generateReceipt);

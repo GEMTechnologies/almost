@@ -387,6 +387,19 @@ export const paymentTransactions = pgTable("payment_transactions", {
   processorType: text("processor_type"), // pesapal, stripe, paypal
   countryCode: text("country_code"),
   mobileNumber: text("mobile_number"),
+  currency: text("currency").default("USD"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userCredits = pgTable("user_credits", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  amount: integer("amount").notNull(),
+  source: text("source").notNull(), // 'payment', 'bonus', 'refund', 'admin'
+  description: text("description").notNull(),
+  transactionId: uuid("transaction_id"),
+  expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -539,3 +552,5 @@ export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 export type PaymentTransaction = typeof paymentTransactions.$inferSelect;
 export type InsertPaymentTransaction = typeof paymentTransactions.$inferInsert;
+export type UserCredits = typeof userCredits.$inferSelect;
+export type InsertUserCredits = typeof userCredits.$inferInsert;
