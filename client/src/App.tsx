@@ -44,6 +44,9 @@ import CreditsPurchase from './modules/payment/CreditsPurchase';
 import CreditsPage from './modules/payment/CreditsPage';
 import PurchasePage from './modules/payment/PurchasePage';
 
+// New Billing System
+import BillingSystem from './modules/billing/BillingSystem';
+
 // Other Pages
 import AIAssistant from './modules/ai/AIAssistant';
 import Settings from './modules/settings/Settings';
@@ -181,9 +184,9 @@ function App() {
                   <Route path="/billing/dashboard" element={<UserDashboard />} />
                   <Route path="/billing/history" element={<BillingHistory />} />
                   
-                  {/* Legacy Credits (redirects to billing) */}
-                  <Route path="/credits" element={<BillingDashboard />} />
-                  <Route path="/credits-mobile" element={<BillingDashboard />} />
+                  {/* New Billing System */}
+                  <Route path="/credits" element={<BillingSystem />} />
+                  <Route path="/credits-mobile" element={<BillingSystem />} />
                   <Route path="/purchase/:packageId" element={<PurchasePage />} />
                   <Route path="/credits-purchase/:packageId" element={<CreditsPurchase />} />
                   <Route path="/ngo-pipeline" element={<NGOPipeline />} />
