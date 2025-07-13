@@ -187,8 +187,8 @@ function App() {
                   <Route path="/billing/dashboard" element={<UserDashboard />} />
                   <Route path="/billing/history" element={<BillingHistory />} />
                   
-                  {/* Credits Page */}
-                  <Route path="/credits" element={<PackagesPage />} />
+                  {/* Credits Page - Keep Original */}
+                  <Route path="/credits" element={<BillingSystem />} />
                   <Route path="/credits-mobile" element={<BillingSystem />} />
                   
                   {/* Multi-step Purchase Flow */}
