@@ -12,6 +12,7 @@ import documentWritingRoutes from "./routes/documentWriting";
 import documentUploadRoutes from "./routes/documentUpload";
 import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createPesaPalOrder, handlePesaPalCallback, handlePesaPalIPN } from "./pesapal";
+import { generateReceipt } from "./services/receiptGenerator";
 
 import { proposals, donorOpportunities, paymentTransactions, savedPaymentMethods } from "../shared/schema";
 import { eq, desc, sql } from "drizzle-orm";
@@ -60,6 +61,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.get("/api/pesapal/ipn", async (req, res) => {
     await handlePesaPalIPN(req, res);
+  });
+
+  // Professional Receipt Generation
+  app.post("/api/receipt/generate", generateReceipt);
+
+  app.get("/api/receipt/download", async (req, res) => {
+    try {
+      const { transactionId, format = 'html' } = req.query;
+      
+      // In a real app, fetch from database
+      const sampleReceiptData = {
+        transactionId: transactionId as string || 'DEMO_' + Date.now(),
+        packageName: 'Professional',
+        amount: 24.99,
+        currency: 'USD',
+        credits: 150,
+        paymentMethod: 'Mobile Money (MTN)',
+        customerName: 'Demo User',
+        customerEmail: 'demo@granadaos.com',
+        customerPhone: '+256760195194',
+        date: new Date().toISOString(),
+        organizationName: 'Granada Foundation',
+        userType: 'NGO'
+      };
+
+      const { ProfessionalReceiptGenerator } = await import("./services/receiptGenerator");
+      const generator = new ProfessionalReceiptGenerator();
+      
+      if (format === 'svg') {
+        const svgContent = generator.generateReceiptSVG(sampleReceiptData);
+        res.setHeader('Content-Type', 'image/svg+xml');
+        res.setHeader('Content-Disposition', `attachment; filename="receipt-${transactionId}.svg"`);
+        return res.send(svgContent);
+      }
+      
+      const htmlContent = generator.generateReceiptHTML(sampleReceiptData);
+      res.setHeader('Content-Type', 'text/html');
+      return res.send(htmlContent);
+      
+    } catch (error) {
+      console.error('Receipt download failed:', error);
+      res.status(500).json({ error: 'Failed to generate receipt' });
+    }
   });
   
   // Saved Payment Methods routes

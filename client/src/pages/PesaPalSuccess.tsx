@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, Sparkles, ArrowLeft, Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { CheckCircle, Sparkles, ArrowLeft, Download, Receipt } from 'lucide-react';
+import ProfessionalReceipt from '@/components/ProfessionalReceipt';
 
 export default function PesaPalSuccess() {
   const { packageId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [animationComplete, setAnimationComplete] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const transactionId = searchParams.get('transaction_id');
   const orderTrackingId = searchParams.get('OrderTrackingId');
@@ -31,6 +32,44 @@ export default function PesaPalSuccess() {
   const handleBackToPackages = () => {
     navigate('/credits');
   };
+
+  const handleShowReceipt = () => {
+    setShowReceipt(true);
+  };
+
+  const receiptData = {
+    transactionId: transactionId || 'DEMO_' + Date.now(),
+    packageName: 'Professional Package',
+    amount: parseFloat(amount || '24.99'),
+    currency: 'USD',
+    credits: 150,
+    paymentMethod: 'Mobile Money (PesaPal)',
+    customerName: 'Demo User',
+    customerEmail: 'demo@granadaos.com',
+    customerPhone: '+256760195194',
+    date: new Date().toISOString(),
+    organizationName: 'Granada Foundation',
+    userType: 'NGO'
+  };
+
+  // Show receipt if requested
+  if (showReceipt) {
+    return (
+      <div className="min-h-screen bg-slate-50 py-8">
+        <div className="container mx-auto px-4">
+          <button 
+            onClick={() => setShowReceipt(false)}
+            className="mb-6 flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Success Page
+          </button>
+          
+          <ProfessionalReceipt data={receiptData} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-950 dark:to-green-950 flex items-center justify-center p-4">
@@ -145,22 +184,29 @@ export default function PesaPalSuccess() {
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          <Button 
-            onClick={handleContinue}
+          <button 
+            onClick={handleShowReceipt}
             className="w-full bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105"
           >
-            <Sparkles className="w-4 h-4 mr-2" />
-            View My Credits
-          </Button>
+            <Receipt className="w-4 h-4 mr-2" />
+            View Beautiful Receipt
+          </button>
           
-          <Button 
-            variant="outline"
-            onClick={handleBackToPackages}
-            className="w-full border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+          <button 
+            onClick={handleContinue}
+            className="w-full border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950 py-3 rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <Sparkles className="w-4 h-4 mr-2 inline" />
+            View My Credits
+          </button>
+          
+          <button 
+            onClick={handleBackToPackages}
+            className="w-full border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950 py-3 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 inline" />
             Back to Packages
-          </Button>
+          </button>
         </div>
 
         {/* Receipt Download */}

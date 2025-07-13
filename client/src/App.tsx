@@ -59,6 +59,9 @@ import Analytics from './modules/analytics/Analytics';
 import HumanHelpPage from './modules/help/HumanHelpPage';
 import HumanHelpButton from './shared/HumanHelpButton';
 
+// Professional Receipt System
+import ReceiptDemo from './pages/ReceiptDemo';
+
 import AddictionProvider from './contexts/AddictionContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { OpportunityProvider } from './contexts/OpportunityContext';
@@ -192,6 +195,9 @@ function App() {
                   <Route path="/purchase/:packageId/method" element={<PaymentMethodSelection />} />
                   <Route path="/purchase/:packageId/details" element={<PaymentDetails />} />
                   <Route path="/purchase/:packageId/success" element={<PaymentSuccess />} />
+                  
+                  {/* Beautiful Receipt System */}
+                  <Route path="/receipt-demo" element={<ReceiptDemo />} />
                   
                   {/* Legacy routes */}
                   <Route path="/purchase/:packageId" element={<PurchasePage />} />
