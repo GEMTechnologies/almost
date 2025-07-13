@@ -341,12 +341,12 @@ router.get('/cv-profiles', async (req, res) => {
 
     if (search) {
       conditions.push(
-        sql`(${cvProfiles.firstName} ILIKE ${'%' + search + '%'} OR ${cvProfiles.lastName} ILIKE ${'%' + search + '%'} OR ${cvProfiles.professionalTitle} ILIKE ${'%' + search + '%'})`
+        sql`(${cvProfiles.fullName} ILIKE ${'%' + search + '%'} OR ${cvProfiles.professionalTitle} ILIKE ${'%' + search + '%'})`
       );
     }
 
-    if (countryId) conditions.push(eq(cvProfiles.countryId, countryId as string));
-    if (cityId) conditions.push(eq(cvProfiles.cityId, cityId as string));
+    if (countryId) conditions.push(eq(cvProfiles.countryId, parseInt(countryId as string)));
+    if (cityId) conditions.push(eq(cvProfiles.countryId, parseInt(cityId as string)));
 
     const cvResults = await query
       .where(and(...conditions))

@@ -215,6 +215,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Credit deduction endpoint
+  app.post("/api/auth/deduct-credits", async (req, res) => {
+    try {
+      const { amount, action } = req.body;
+      const userId = req.body.userId || 'demo-user-1'; // Get from session in real app
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ success: false, error: 'Invalid credit amount' });
+      }
+
+      // Get current user
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      
+      if (user.length === 0) {
+        return res.status(404).json({ success: false, error: 'User not found' });
+      }
+
+      const currentCredits = user[0].credits || 0;
+      
+      if (currentCredits < amount) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Insufficient credits',
+          currentBalance: currentCredits,
+          required: amount
+        });
+      }
+
+      // Deduct credits
+      const newBalance = currentCredits - amount;
+      await db.update(users)
+        .set({ credits: newBalance })
+        .where(eq(users.id, userId));
+
+      // Log the transaction
+      console.log(`Credits deducted: ${amount} for ${action}. New balance: ${newBalance}`);
+
+      res.json({
+        success: true,
+        message: `${amount} credits deducted for ${action}`,
+        newBalance,
+        action
+      });
+    } catch (error) {
+      console.error('Failed to deduct credits:', error);
+      res.status(500).json({ success: false, error: 'Failed to deduct credits' });
+    }
+  });
+
   app.get("/api/credits/transactions", async (req, res) => {
     try {
       const userId = req.query.userId as string || 'demo-user-1';
