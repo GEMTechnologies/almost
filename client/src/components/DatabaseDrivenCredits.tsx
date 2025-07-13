@@ -52,10 +52,20 @@ const DatabaseDrivenCredits: React.FC = () => {
     refetchInterval: 30000 // Refetch every 30 seconds to get DB updates
   });
 
-  // Fetch user balance
-  const { data: userBalance = 0 } = useQuery({
-    queryKey: ['/api/credits/balance']
+  // Fetch user balance from auth profile
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/auth/profile'],
+    queryFn: async () => {
+      const response = await fetch('/api/auth/profile');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    }
   });
+
+  const userBalance = userProfile?.user?.credits || 0;
 
   const packages = packagesResponse?.packages || [];
 

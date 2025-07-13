@@ -207,8 +207,9 @@ function App() {
                   <Route path="/receipt-demo" element={<ReceiptDemo />} />
                   
                   {/* Legacy routes */}
-                  <Route path="/purchase/:packageId" element={<PurchasePage />} />
+                  <Route path="/purchase/:packageId" element={<CreditsPurchase />} />
                   <Route path="/credits-purchase/:packageId" element={<CreditsPurchase />} />
+                  <Route path="/purchase-new/:packageId" element={<PurchasePage />} />
                   <Route path="/ngo-pipeline" element={<NGOPipeline />} />
                 </Routes>
               </main>
