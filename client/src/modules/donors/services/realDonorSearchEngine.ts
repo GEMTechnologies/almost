@@ -142,28 +142,35 @@ class RealDonorSearchEngine {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
           
-          const response = await fetch(service, {
-            signal: controller.signal,
-            headers: {
-              'Accept': 'application/json',
+          try {
+            const response = await fetch(service, {
+              signal: controller.signal,
+              headers: {
+                'Accept': 'application/json',
+              }
+            });
+          
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) continue;
+            
+            const data = await response.json();
+            
+            // Different APIs use different field names
+            const countryName = data.country_name || data.country || '';
+            const countryCode = data.country_code || data.countryCode || '';
+            
+            if (countryName) {
+              this.userCountry = countryName;
+              this.userCountryCode = countryCode;
+              console.log('User country detected:', this.userCountry);
+              break; // Stop trying other services
             }
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (!response.ok) continue;
-          
-          const data = await response.json();
-          
-          // Different APIs use different field names
-          const countryName = data.country_name || data.country || '';
-          const countryCode = data.country_code || data.countryCode || '';
-          
-          if (countryName) {
-            this.userCountry = countryName;
-            this.userCountryCode = countryCode;
-            console.log('User country detected:', this.userCountry);
-            break; // Stop trying other services
+          } catch (fetchError) {
+            clearTimeout(timeoutId);
+            console.log('Geo-location API error:', fetchError.message);
+            // Continue to next service
+            continue;
           }
         } catch (e) {
           // Continue to next service

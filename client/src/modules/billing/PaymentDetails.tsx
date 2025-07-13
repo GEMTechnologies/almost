@@ -12,6 +12,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import PayPalButton from '../../components/PayPalButton';
+import PaymentConfirmation from './PaymentConfirmation';
 
 const PaymentDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const PaymentDetails: React.FC = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [formData, setFormData] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -47,19 +49,66 @@ const PaymentDetails: React.FC = () => {
     } else if (paymentMethod === 'mobile-money') {
       isValid = newFormData.phoneNumber.length >= 10;
     } else if (paymentMethod === 'paypal') {
-      isValid = newFormData.email.includes('@') && 
-                newFormData.email.length >= 5;
+      isValid = true; // PayPal email is optional
     }
     setIsFormValid(isValid);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isFormValid) return;
+    
+    // Show confirmation popup instead of immediate processing
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmPayment = async () => {
     setLoading(true);
     
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (paymentMethod === 'paypal') {
+        // For PayPal, create order and redirect
+        const response = await fetch('/api/paypal/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: packageData?.price?.toString() || "10",
+            currency: "USD",
+            intent: "CAPTURE"
+          })
+        });
+        
+        const orderData = await response.json();
+        if (orderData.id) {
+          // Redirect to PayPal
+          window.location.href = `https://www.sandbox.paypal.com/checkoutnow?token=${orderData.id}`;
+          return;
+        }
+      } else if (paymentMethod === 'mobile-money') {
+        // For mobile money, use PesaPal
+        const response = await fetch('/api/pesapal/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: packageData?.price?.toString() || "10",
+            currency: "UGX",
+            phone_number: formData.phoneNumber,
+            email_address: "user@example.com",
+            first_name: "Customer",
+            last_name: "User"
+          })
+        });
+        
+        const orderData = await response.json();
+        if (orderData.success && orderData.redirect_url) {
+          // Redirect to PesaPal
+          window.location.href = orderData.redirect_url;
+          return;
+        }
+      } else {
+        // For cards, simulate processing
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
       
       // Navigate to success page
       navigate(`/purchase/${packageId}/success`, {
@@ -82,6 +131,7 @@ const PaymentDetails: React.FC = () => {
       });
     } finally {
       setLoading(false);
+      setShowConfirmation(false);
     }
   };
 
@@ -254,31 +304,24 @@ const PaymentDetails: React.FC = () => {
         
       case 'paypal':
         return (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
-              <div className="flex items-center mb-4">
-                <DollarSign className="w-6 h-6 text-blue-600 mr-2" />
-                <h4 className="text-lg font-semibold text-blue-900">PayPal Secure Payment</h4>
-              </div>
-              <p className="text-sm text-blue-800 mb-6">
-                Click the PayPal button below to complete your payment securely through PayPal's platform.
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                PayPal Email (Optional)
+              </label>
+              <input
+                type="email"
+                placeholder="john@example.com"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+            
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                You'll be redirected to PayPal to complete your payment securely.
               </p>
-              
-              {/* PayPal Button */}
-              <div className="flex justify-center">
-                <div className="w-full max-w-md">
-                  <PayPalButton 
-                    amount={packageData?.price?.toString() || "10"}
-                    currency="USD"
-                    intent="CAPTURE"
-                  />
-                </div>
-              </div>
-              
-              <div className="mt-4 text-xs text-blue-600 text-center">
-                <Shield className="w-4 h-4 inline mr-1" />
-                Protected by PayPal's secure payment processing
-              </div>
             </div>
           </div>
         );
@@ -441,6 +484,17 @@ const PaymentDetails: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Payment Confirmation Popup */}
+      <PaymentConfirmation
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={handleConfirmPayment}
+        paymentMethod={paymentMethod}
+        packageData={packageData}
+        formData={formData}
+        loading={loading}
+      />
     </div>
   );
 };

@@ -114,6 +114,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ success: false, error: 'Failed to delete payment method' });
     }
   });
+
+  // PesaPal routes
+  app.post("/api/pesapal/order", async (req, res) => {
+    const { createPesaPalOrder } = await import("./pesapal");
+    await createPesaPalOrder(req, res);
+  });
+
+  app.get("/api/pesapal/callback", async (req, res) => {
+    const { handlePesaPalCallback } = await import("./pesapal");
+    await handlePesaPalCallback(req, res);
+  });
+
+  app.get("/api/pesapal/ipn", async (req, res) => {
+    const { handlePesaPalIPN } = await import("./pesapal");
+    await handlePesaPalIPN(req, res);
+  });
   
   // Credits and billing routes
   app.get("/api/credits/balance", async (req, res) => {
