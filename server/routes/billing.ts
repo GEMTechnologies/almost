@@ -16,7 +16,7 @@ const billingAuth = (req: express.Request, res: express.Response, next: express.
   res.setHeader('X-XSS-Protection', '1; mode=block');
   
   // Basic user validation (in production, use proper JWT/session)
-  const userId = req.headers['x-user-id'] || req.query.userId || 'demo-user';
+  const userId = req.headers['x-user-id'] || req.query.userId || 'demo-user-1';
   req.userId = userId as string;
   
   next();
@@ -26,12 +26,12 @@ const billingAuth = (req: express.Request, res: express.Response, next: express.
 router.get('/balance', billingAuth, async (req, res) => {
   try {
     // Handle demo user
-    if (req.userId === 'demo-user') {
+    if (req.userId === 'demo-user-1' || req.userId === 'demo-user') {
       return res.json({
         success: true,
         balance: 245,
         totalPurchased: 245,
-        userId: 'demo-user'
+        userId: 'demo-user-1'
       });
     }
 
@@ -57,7 +57,7 @@ router.get('/balance', billingAuth, async (req, res) => {
 router.get('/dashboard', billingAuth, async (req, res) => {
   try {
     // Handle demo user
-    if (req.userId === 'demo-user') {
+    if (req.userId === 'demo-user-1' || req.userId === 'demo-user') {
       return res.json({
         success: true,
         balance: 245,
@@ -442,9 +442,9 @@ router.post('/create-payment', billingAuth, async (req, res) => {
 
     // Get user details (handle demo user)
     let user;
-    if (req.userId === 'demo-user') {
+    if (req.userId === 'demo-user-1' || req.userId === 'demo-user') {
       user = {
-        id: 'demo-user',
+        id: 'demo-user-1',
         email: 'demo@user.com',
         firstName: 'Demo',
         lastName: 'User'

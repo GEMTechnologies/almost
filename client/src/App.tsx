@@ -37,7 +37,7 @@ import JobsPage from './modules/jobs/JobsPage';
 import BusinessPage from './modules/business/BusinessPage';
 
 // Billing System
-import { BillingDashboard, BillingHistory, UserDashboard } from './modules/billing';
+import { BillingDashboard, BillingHistory, UserDashboard, PackagesPage } from './modules/billing';
 
 // Legacy Payment (keeping for compatibility)
 import CreditsPurchase from './modules/payment/CreditsPurchase';
@@ -183,12 +183,12 @@ function App() {
                   <Route path="/analytics" element={<Analytics />} />
                   
                   {/* New Billing System */}
-                  <Route path="/billing" element={<BillingDashboard />} />
+                  <Route path="/billing" element={<PackagesPage />} />
                   <Route path="/billing/dashboard" element={<UserDashboard />} />
                   <Route path="/billing/history" element={<BillingHistory />} />
                   
-                  {/* New Billing System */}
-                  <Route path="/credits" element={<BillingSystem />} />
+                  {/* Credits Page */}
+                  <Route path="/credits" element={<PackagesPage />} />
                   <Route path="/credits-mobile" element={<BillingSystem />} />
                   
                   {/* Multi-step Purchase Flow */}
