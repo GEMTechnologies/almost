@@ -12,10 +12,10 @@ export default function ReceiptDemo() {
     credits: 150,
     paymentMethod: 'Mobile Money (PesaPal)',
     customerName: 'Demo User',
-    customerEmail: 'demo@granadaos.com',
+    customerEmail: 'demo@granadaglobal.com',
     customerPhone: '+256760195194',
     date: new Date().toISOString(),
-    organizationName: 'Granada Foundation',
+    organizationName: 'Granada Global Tech Ltd',
     userType: 'NGO'
   };
 
@@ -32,12 +32,12 @@ export default function ReceiptDemo() {
         
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-4">
-            Granada OS Professional Receipt
+            Granada Global Tech Ltd - Professional Receipt System
           </h1>
           <p className="text-slate-600 max-w-2xl mx-auto">
-            Experience our beautiful, professional receipt design with modern graphics, 
-            branding, and comprehensive transaction details. This receipt can be downloaded 
-            as HTML or SVG for your records.
+            Experience our stunning professional receipt design with enhanced graphics, 
+            company branding, and comprehensive sharing features. Download as PDF, share to WhatsApp, 
+            email, social media, or print for your records.
           </p>
         </div>
         

@@ -71,11 +71,14 @@ export class ProfessionalReceiptGenerator {
         </g>
         
         <!-- Enhanced text with gradient -->
-        <text x="55" y="20" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="800" fill="url(#textGrad)">
-          GRANADA
+        <text x="55" y="18" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="800" fill="url(#textGrad)">
+          GRANADA GLOBAL TECH LTD
         </text>
-        <text x="55" y="33" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#6b7280" letter-spacing="3px" font-weight="500">
+        <text x="55" y="30" font-family="Inter, system-ui, sans-serif" font-size="8" fill="#6b7280" letter-spacing="2px" font-weight="500">
           FUNDING PLATFORM
+        </text>
+        <text x="55" y="40" font-family="Inter, system-ui, sans-serif" font-size="7" fill="#9ca3af" font-weight="400">
+          SOROTI, UGANDA
         </text>
         
         <!-- Decorative elements -->
@@ -234,11 +237,17 @@ export class ProfessionalReceiptGenerator {
         Your credits have been added to your account and are ready to use.
       </text>
       
-      <!-- Support info -->
-      <text x="300" y="760" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">
-        Questions? Contact support@granadaos.com | www.granadaos.com
+      <!-- Company Address -->
+      <text x="300" y="750" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#1e293b">
+        GRANADA GLOBAL TECH LTD
       </text>
-      <text x="300" y="775" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#94a3b8">
+      <text x="300" y="765" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">
+        Amen A, Soroti, Eastern Region, Uganda
+      </text>
+      <text x="300" y="778" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#64748b">
+        Postal Address: 290884 Soroti | support@granadaglobal.com
+      </text>
+      <text x="300" y="791" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#94a3b8">
         Keep this receipt for your records
       </text>
 
