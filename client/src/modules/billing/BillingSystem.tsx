@@ -59,8 +59,14 @@ const BillingSystem: React.FC = () => {
   const handlePurchase = async (packageId: string) => {
     setLoading(packageId);
     try {
-      // Navigate to purchase page with selected package
-      navigate(`/purchase/${packageId}`);
+      const selectedPackage = creditPackages.find(pkg => pkg.id === packageId);
+      // Navigate to payment method selection with package data
+      navigate(`/purchase/${packageId}/method`, {
+        state: {
+          package: selectedPackage,
+          returnUrl: window.location.pathname
+        }
+      });
     } catch (error) {
       console.error('Purchase failed:', error);
     } finally {

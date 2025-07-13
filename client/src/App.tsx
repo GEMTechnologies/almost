@@ -46,6 +46,9 @@ import PurchasePage from './modules/payment/PurchasePage';
 
 // New Billing System
 import BillingSystem from './modules/billing/BillingSystem';
+import PaymentMethodSelection from './modules/billing/PaymentMethodSelection';
+import PaymentDetails from './modules/billing/PaymentDetails';
+import PaymentSuccess from './modules/billing/PaymentSuccess';
 
 // Other Pages
 import AIAssistant from './modules/ai/AIAssistant';
@@ -187,6 +190,13 @@ function App() {
                   {/* New Billing System */}
                   <Route path="/credits" element={<BillingSystem />} />
                   <Route path="/credits-mobile" element={<BillingSystem />} />
+                  
+                  {/* Multi-step Purchase Flow */}
+                  <Route path="/purchase/:packageId/method" element={<PaymentMethodSelection />} />
+                  <Route path="/purchase/:packageId/details" element={<PaymentDetails />} />
+                  <Route path="/purchase/:packageId/success" element={<PaymentSuccess />} />
+                  
+                  {/* Legacy routes */}
                   <Route path="/purchase/:packageId" element={<PurchasePage />} />
                   <Route path="/credits-purchase/:packageId" element={<CreditsPurchase />} />
                   <Route path="/ngo-pipeline" element={<NGOPipeline />} />
