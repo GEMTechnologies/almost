@@ -31,33 +31,57 @@ export class ProfessionalReceiptGenerator {
 
   private createGranadaLogo(): string {
     return `
-      <svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg">
-        <!-- Modern gradient background -->
+      <svg width="140" height="50" viewBox="0 0 140 50" xmlns="http://www.w3.org/2000/svg">
+        <!-- Enhanced gradient definitions -->
         <defs>
           <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+            <stop offset="0%" style="stop-color:#06d6a0;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#10b981;stop-opacity:1" />
             <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
           </linearGradient>
+          <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#1f2937;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#374151;stop-opacity:1" />
+          </linearGradient>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge> 
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
           <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.3"/>
+            <feDropShadow dx="3" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.25"/>
           </filter>
         </defs>
         
-        <!-- Background circle -->
-        <circle cx="20" cy="20" r="18" fill="url(#logoGrad)" filter="url(#shadow)"/>
+        <!-- Glowing background -->
+        <circle cx="25" cy="25" r="22" fill="url(#logoGrad)" filter="url(#glow)" opacity="0.8"/>
+        <circle cx="25" cy="25" r="20" fill="url(#logoGrad)" filter="url(#shadow)"/>
         
-        <!-- Granada icon - stylized G -->
-        <path d="M12 8 C12 8, 28 8, 28 8 C28 12, 28 16, 28 20 C28 28, 20 32, 20 32 C12 32, 12 24, 12 20 Z" 
-              fill="white" opacity="0.9"/>
-        <circle cx="20" cy="20" r="4" fill="url(#logoGrad)"/>
+        <!-- Modern Granada symbol -->
+        <g transform="translate(25,25)">
+          <!-- Outer ring -->
+          <circle cx="0" cy="0" r="16" fill="none" stroke="white" stroke-width="2" opacity="0.9"/>
+          <!-- Inner design -->
+          <path d="M-12 -8 L12 -8 L12 0 L4 0 L4 8 L-4 8 L-4 0 L-12 0 Z" 
+                fill="white" opacity="0.95"/>
+          <circle cx="0" cy="0" r="5" fill="url(#logoGrad)"/>
+          <circle cx="0" cy="0" r="3" fill="white" opacity="0.8"/>
+        </g>
         
-        <!-- Text -->
-        <text x="45" y="16" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1f2937">
+        <!-- Enhanced text with gradient -->
+        <text x="55" y="20" font-family="Inter, system-ui, sans-serif" font-size="18" font-weight="800" fill="url(#textGrad)">
           GRANADA
         </text>
-        <text x="45" y="28" font-family="Arial, sans-serif" font-size="8" fill="#6b7280" letter-spacing="2px">
+        <text x="55" y="33" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#6b7280" letter-spacing="3px" font-weight="500">
           FUNDING PLATFORM
         </text>
+        
+        <!-- Decorative elements -->
+        <circle cx="130" cy="10" r="2" fill="#10b981" opacity="0.6"/>
+        <circle cx="135" cy="15" r="1.5" fill="#06d6a0" opacity="0.4"/>
+        <circle cx="132" cy="20" r="1" fill="#047857" opacity="0.3"/>
       </svg>
     `;
   }

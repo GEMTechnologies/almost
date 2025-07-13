@@ -5,7 +5,9 @@
 
 import React, { useState, useEffect } from 'react';
 // Using custom button styling instead of shadcn
-import { Download, Printer, Mail, Share2 } from 'lucide-react';
+import { Download, Printer, Mail, Share2, FileText } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface ReceiptData {
   transactionId: string;
@@ -111,6 +113,91 @@ const ProfessionalReceipt: React.FC<ProfessionalReceiptProps> = ({
     window.open(`mailto:${data.customerEmail}?subject=${subject}&body=${body}`);
   };
 
+  const downloadAsPDF = async () => {
+    try {
+      const receiptElement = document.getElementById('professional-receipt');
+      if (!receiptElement) {
+        alert('Receipt not found. Please wait for it to load.');
+        return;
+      }
+
+      // Create canvas from HTML element with high quality
+      const canvas = await html2canvas(receiptElement, {
+        scale: 3, // Higher resolution for crisp PDF
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        height: receiptElement.offsetHeight,
+        width: receiptElement.offsetWidth,
+        logging: false,
+        allowTaint: true
+      });
+
+      // Create PDF with beautiful formatting
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true
+      });
+
+      // Calculate dimensions to fit A4 beautifully
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pdfWidth - 20; // 10mm margin on each side
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      let yPosition = 10; // Start with 10mm top margin
+
+      // If receipt fits on one page
+      if (imgHeight <= pdfHeight - 20) {
+        pdf.addImage(imgData, 'PNG', 10, yPosition, imgWidth, imgHeight);
+      } else {
+        // Multi-page handling
+        let remainingHeight = imgHeight;
+        let sourceY = 0;
+        
+        while (remainingHeight > 0) {
+          const pageHeight = Math.min(remainingHeight, pdfHeight - 20);
+          const sourceHeight = (pageHeight * canvas.height) / imgHeight;
+          
+          // Create a canvas for this page section
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = sourceHeight;
+          const pageCtx = pageCanvas.getContext('2d');
+          
+          if (pageCtx) {
+            pageCtx.drawImage(
+              canvas,
+              0, sourceY, canvas.width, sourceHeight,
+              0, 0, canvas.width, sourceHeight
+            );
+            
+            const pageImgData = pageCanvas.toDataURL('image/png', 1.0);
+            pdf.addImage(pageImgData, 'PNG', 10, 10, imgWidth, pageHeight);
+            
+            remainingHeight -= pageHeight;
+            sourceY += sourceHeight;
+            
+            if (remainingHeight > 0) {
+              pdf.addPage();
+            }
+          }
+        }
+      }
+
+      // Download the beautiful PDF
+      pdf.save(`Granada-Receipt-${data.transactionId}.pdf`);
+      
+      // Show success message
+      alert('Receipt PDF downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -138,6 +225,7 @@ const ProfessionalReceipt: React.FC<ProfessionalReceiptProps> = ({
       {/* Receipt Display */}
       <div className="p-6">
         <div 
+          id="professional-receipt"
           className="w-full border rounded-lg overflow-hidden shadow-sm"
           dangerouslySetInnerHTML={{ __html: receiptHtml }}
         />
@@ -169,6 +257,14 @@ const ProfessionalReceipt: React.FC<ProfessionalReceiptProps> = ({
             >
               <Download className="w-4 h-4" />
               Download SVG
+            </button>
+            
+            <button 
+              onClick={downloadAsPDF}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-lg hover:from-emerald-600 hover:to-green-600 transition-all transform hover:scale-105"
+            >
+              <FileText className="w-4 h-4" />
+              Download PDF
             </button>
             
             <button 
