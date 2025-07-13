@@ -129,62 +129,40 @@ class RealDonorSearchEngine {
     this.countryDetectionAttempted = true;
     
     try {
-      // Try multiple geolocation services for redundancy
-      const services = [
-        'https://ipapi.co/json/',
-        'https://ipinfo.io/json',
-        'https://api.ipgeolocation.io/ipgeo?apiKey=free'
-      ];
+      // Use timezone-based country detection instead of external APIs
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
       
-      // Try each service until one works
-      for (const service of services) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
-          
-          try {
-            const response = await fetch(service, {
-              signal: controller.signal,
-              headers: {
-                'Accept': 'application/json',
-              }
-            });
-          
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) continue;
-            
-            const data = await response.json();
-            
-            // Different APIs use different field names
-            const countryName = data.country_name || data.country || '';
-            const countryCode = data.country_code || data.countryCode || '';
-            
-            if (countryName) {
-              this.userCountry = countryName;
-              this.userCountryCode = countryCode;
-              console.log('User country detected:', this.userCountry);
-              break; // Stop trying other services
-            }
-          } catch (fetchError) {
-            clearTimeout(timeoutId);
-            console.log('Geo-location API error:', fetchError.message);
-            // Continue to next service
-            continue;
-          }
-        } catch (e) {
-          // Continue to next service
-          continue;
-        }
-      }
+      // Simple timezone-to-country mapping for common cases
+      const timezoneCountryMap: { [key: string]: { country: string; code: string } } = {
+        'Africa/Kampala': { country: 'Uganda', code: 'UG' },
+        'Africa/Nairobi': { country: 'Kenya', code: 'KE' },
+        'Africa/Lagos': { country: 'Nigeria', code: 'NG' },
+        'Africa/Cairo': { country: 'Egypt', code: 'EG' },
+        'Africa/Johannesburg': { country: 'South Africa', code: 'ZA' },
+        'America/New_York': { country: 'United States', code: 'US' },
+        'Europe/London': { country: 'United Kingdom', code: 'GB' },
+        'Europe/Berlin': { country: 'Germany', code: 'DE' },
+        'Asia/Tokyo': { country: 'Japan', code: 'JP' },
+        'Asia/Shanghai': { country: 'China', code: 'CN' },
+      };
       
-      // If all services fail, use fallback
-      if (!this.userCountry) {
-        this.setFallbackCountry();
+      const detected = timezoneCountryMap[timezone];
+      if (detected) {
+        this.userCountry = detected.country;
+        this.userCountryCode = detected.code;
+        console.log('User country detected:', this.userCountry);
+      } else {
+        // Default fallback
+        this.userCountry = 'Uganda';
+        this.userCountryCode = 'UG';
+        console.log('User country detected:', this.userCountry);
       }
     } catch (error) {
       console.warn('Error detecting user country:', error);
-      this.setFallbackCountry();
+      // Default fallback
+      this.userCountry = 'Uganda';
+      this.userCountryCode = 'UG';
+      console.log('User country detected:', this.userCountry);
     }
   }
   
