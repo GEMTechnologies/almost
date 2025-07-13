@@ -182,13 +182,13 @@ function App() {
                   <Route path="/documents" element={<Documents />} />
                   <Route path="/analytics" element={<Analytics />} />
                   
-                  {/* New Billing System */}
+                  {/* Beautiful Billing Page for Landing */}
                   <Route path="/billing" element={<PackagesPage />} />
-                  <Route path="/billing/dashboard" element={<UserDashboard />} />
-                  <Route path="/billing/history" element={<BillingHistory />} />
                   
-                  {/* Credits Page - Keep Original */}
+                  {/* Credits Dashboard - Original System */}
                   <Route path="/credits" element={<BillingSystem />} />
+                  <Route path="/credits/dashboard" element={<UserDashboard />} />
+                  <Route path="/credits/history" element={<BillingHistory />} />
                   <Route path="/credits-mobile" element={<BillingSystem />} />
                   
                   {/* Multi-step Purchase Flow */}

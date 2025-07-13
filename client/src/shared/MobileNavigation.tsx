@@ -62,6 +62,7 @@ const MobileNavigation: React.FC = () => {
     { id: 'business', label: 'Business', icon: Building, path: '/business' },
     { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/analytics' },
     { id: 'funding', label: 'Funding', icon: DollarSign, path: '/funding' },
+    { id: 'credits', label: 'Credits', icon: Gem, path: '/credits' },
     { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
   ];

@@ -327,7 +327,8 @@ The architecture enables true microservice modularity with complete fault isolat
 - **Package Features**: Detailed feature lists with checkmarks, icon-based visual hierarchy, and clear pricing
 - **User Balance Display**: Current credit balance prominently shown in header with sparkle icons
 - **FAQ Section**: Comprehensive frequently asked questions with professional grid layout
-- **Route Separation**: `/billing` uses new beautiful PackagesPage, `/credits` keeps original BillingSystem
+- **Route Separation**: `/billing` for beautiful landing page packages, `/credits` for dashboard system
+- **Dashboard Navigation**: All sidebar and mobile navigation uses `/credits` route for consistency
 - **Database UUID Fix**: Resolved demo user handling issues for proper balance retrieval
 - **Mobile Responsive**: Fully responsive design working across all device sizes
 - **Payment Integration**: Seamlessly connects to existing payment confirmation flow
