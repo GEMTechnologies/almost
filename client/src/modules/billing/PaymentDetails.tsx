@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { 
   CreditCard, 
@@ -7,7 +7,9 @@ import {
   DollarSign, 
   ArrowLeft,
   Shield,
-  Lock
+  Lock,
+  Sparkles,
+  CheckCircle
 } from 'lucide-react';
 
 const PaymentDetails: React.FC = () => {
@@ -15,6 +17,7 @@ const PaymentDetails: React.FC = () => {
   const { packageId } = useParams();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
   const [formData, setFormData] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -30,7 +33,24 @@ const PaymentDetails: React.FC = () => {
   const returnUrl = location.state?.returnUrl || '/';
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const newFormData = { ...formData, [field]: value };
+    setFormData(newFormData);
+    
+    // Check form validity based on payment method
+    let isValid = false;
+    if (paymentMethod === 'card') {
+      isValid = newFormData.cardNumber.length >= 16 && 
+                newFormData.expiryDate.length >= 5 && 
+                newFormData.cvv.length >= 3 && 
+                newFormData.cardName.length >= 2;
+    } else if (paymentMethod === 'mobile-money') {
+      isValid = newFormData.phoneNumber.length >= 10 && 
+                newFormData.fullName.length >= 2;
+    } else if (paymentMethod === 'paypal') {
+      isValid = newFormData.email.includes('@') && 
+                newFormData.email.length >= 5;
+    }
+    setIsFormValid(isValid);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,14 +100,25 @@ const PaymentDetails: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 Card Number
               </label>
-              <input
-                type="text"
-                placeholder="1234 5678 9012 3456"
-                value={formData.cardNumber}
-                onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                required
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="1234 5678 9012 3456"
+                  value={formData.cardNumber}
+                  onChange={(e) => handleInputChange('cardNumber', e.target.value)}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 pr-10 transition-all"
+                  required
+                />
+                {formData.cardNumber.length >= 16 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  >
+                    <CheckCircle className="w-5 h-5 text-emerald-500" />
+                  </motion.div>
+                )}
+              </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -262,23 +293,52 @@ const PaymentDetails: React.FC = () => {
               <form onSubmit={handleSubmit}>
                 {renderPaymentForm()}
                 
-                <button
+                <motion.button
                   type="submit"
-                  disabled={loading}
-                  className="w-full mt-6 bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition-all"
+                  disabled={loading || !isFormValid}
+                  whileHover={isFormValid ? { scale: 1.02 } : {}}
+                  whileTap={isFormValid ? { scale: 0.98 } : {}}
+                  className={`w-full mt-6 font-semibold py-4 rounded-xl transition-all relative overflow-hidden ${
+                    isFormValid && !loading
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg'
+                      : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                  }`}
                 >
-                  {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Processing Payment...
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center">
-                      <Lock className="w-5 h-5 mr-2" />
-                      Complete Purchase ${packageData?.price}
-                    </div>
-                  )}
-                </button>
+                  <AnimatePresence mode="wait">
+                    {loading ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center justify-center"
+                      >
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                        Processing Payment...
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="submit"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center justify-center"
+                      >
+                        {isFormValid ? (
+                          <>
+                            <Sparkles className="w-5 h-5 mr-2" />
+                            Complete Purchase ${packageData?.price}
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="w-5 h-5 mr-2" />
+                            Complete Payment Form
+                          </>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               </form>
               
               <div className="mt-4 flex items-center justify-center text-xs text-slate-500">
