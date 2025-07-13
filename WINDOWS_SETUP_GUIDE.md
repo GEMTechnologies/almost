@@ -1,0 +1,223 @@
+# Granada OS - Windows Setup Guide
+
+## Prerequisites
+
+### 1. Install Node.js
+- Go to https://nodejs.org
+- Download Node.js 20.x LTS version
+- Run the installer and follow the setup wizard
+- Verify installation: Open Command Prompt and run:
+  ```
+  node --version
+  npm --version
+  ```
+
+### 2. Install Git
+- Go to https://git-scm.com/download/win
+- Download and install Git for Windows
+- During installation, choose "Git from the command line and also from 3rd-party software"
+- Verify installation:
+  ```
+  git --version
+  ```
+
+### 3. Install Python (for AI Services)
+- Go to https://www.python.org/downloads/
+- Download Python 3.11 or later
+- **IMPORTANT**: Check "Add Python to PATH" during installation
+- Verify installation:
+  ```
+  python --version
+  pip --version
+  ```
+
+## Database Setup
+
+### Option 1: Use Neon Database (Recommended - Cloud)
+1. Go to https://neon.tech
+2. Create a free account
+3. Create a new project
+4. Copy the connection string (starts with `postgresql://`)
+5. Save this connection string - you'll need it for the `.env` file
+
+### Option 2: Install PostgreSQL Locally
+1. Go to https://www.postgresql.org/download/windows/
+2. Download and install PostgreSQL
+3. During installation, remember the password you set for the `postgres` user
+4. After installation, create a database:
+   ```
+   createdb granada_os
+   ```
+
+## Project Setup
+
+### 1. Clone the Project
+```bash
+git clone [your-repository-url]
+cd granada-os
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Install Python Dependencies
+```bash
+pip install -r requirements.txt
+```
+Or if you have a `pyproject.toml`:
+```bash
+pip install -e .
+```
+
+### 4. Environment Variables Setup
+Create a `.env` file in the root directory:
+
+```env
+# Database
+DATABASE_URL=postgresql://username:password@localhost:5432/granada_os
+
+# AI Services
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Payment Services
+STRIPE_SECRET_KEY=your_stripe_secret_key_here
+PAYPAL_CLIENT_ID=your_paypal_client_id_here
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret_here
+
+# Email Service
+SENDGRID_API_KEY=your_sendgrid_api_key_here
+
+# Session Secret
+SESSION_SECRET=your_random_session_secret_here
+```
+
+**Important**: Replace all placeholder values with your actual API keys and database connection string.
+
+### 5. Database Migration
+```bash
+npm run db:push
+```
+
+## Running the Application
+
+### 1. Start the Main Application
+```bash
+npm run dev
+```
+This starts both the frontend (Vite) and backend (Express) servers.
+
+### 2. Start Python AI Services (Optional)
+In a separate command prompt:
+```bash
+python python_services/ai_proposal_writer.py
+```
+
+### 3. Access the Application
+- Main application: http://localhost:5000
+- AI Services: http://localhost:8030
+
+## API Keys You'll Need
+
+### 1. DeepSeek API Key
+- Go to https://platform.deepseek.com
+- Create an account and get your API key
+- Add to `.env` file as `DEEPSEEK_API_KEY`
+
+### 2. OpenAI API Key (Optional)
+- Go to https://platform.openai.com
+- Create an account and get your API key
+- Add to `.env` file as `OPENAI_API_KEY`
+
+### 3. Stripe Keys (For Payments)
+- Go to https://stripe.com
+- Create an account and get your test/live keys
+- Add to `.env` file as `STRIPE_SECRET_KEY`
+
+### 4. SendGrid API Key (For Emails)
+- Go to https://sendgrid.com
+- Create an account and get your API key
+- Add to `.env` file as `SENDGRID_API_KEY`
+
+## Development Tools (Recommended)
+
+### 1. Visual Studio Code
+- Download from https://code.visualstudio.com
+- Install extensions:
+  - TypeScript and JavaScript Language Features
+  - Tailwind CSS IntelliSense
+  - ES7+ React/Redux/React-Native snippets
+
+### 2. Database Management
+- Install pgAdmin 4 for PostgreSQL management
+- Or use VS Code extension: PostgreSQL
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Node modules issues**:
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+2. **Python dependency issues**:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt --force-reinstall
+   ```
+
+3. **Database connection issues**:
+   - Check your DATABASE_URL is correct
+   - Ensure PostgreSQL service is running
+   - Verify database exists
+
+4. **Port already in use**:
+   ```bash
+   netstat -ano | findstr :5000
+   taskkill /PID [process_id] /F
+   ```
+
+### Getting Help
+
+1. Check the console for error messages
+2. Verify all environment variables are set correctly
+3. Ensure all required services (database, etc.) are running
+4. Check the application logs for detailed error information
+
+## Project Structure
+
+```
+granada-os/
+├── client/          # React frontend
+├── server/          # Express backend
+├── shared/          # Shared TypeScript types
+├── python_services/ # Python AI services
+├── docs/           # Documentation
+└── scripts/        # Utility scripts
+```
+
+## Next Steps
+
+After successful setup:
+1. Access the application at http://localhost:5000
+2. Create your first user account
+3. Explore the NGO dashboard and funding opportunities
+4. Test the AI proposal generation features
+5. Configure payment methods and credit system
+
+## Production Deployment
+
+For production deployment:
+1. Set `NODE_ENV=production`
+2. Use production database credentials
+3. Use live API keys (not test keys)
+4. Configure proper domain and SSL certificates
+5. Set up monitoring and logging
+
+---
+
+For additional support, refer to the main documentation in `/docs/` or check the `replit.md` file for project-specific details.
