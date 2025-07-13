@@ -289,140 +289,97 @@ const CreditsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-xl"
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [360, 180, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-r from-emerald-400/10 to-cyan-400/10 rounded-full blur-xl"
-        />
-      </div>
-
-      <div className="relative p-6 space-y-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between"
-        >
-          <div className="flex items-center space-x-6">
-            <motion.div 
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
-              className="p-4 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl shadow-lg"
-            >
-              <Gem className="w-8 h-8 text-white" />
-            </motion.div>
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                Credits & Billing
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">Power your funding journey with Expert intelligence</p>
-            </div>
-          </div>
-          
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate(-1)}
-            className="flex items-center space-x-2 px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-lg border border-gray-200 dark:border-gray-700"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium">Back</span>
-          </motion.button>
-        </motion.div>
-
-        {/* Current Credits - Enhanced */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="relative"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl blur-xl opacity-20" />
-          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 border border-white/20 dark:border-gray-700/20 shadow-2xl max-w-4xl mx-auto">
-            <div className="flex items-center justify-center space-x-6">
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="p-4 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl"
-              >
-                <Sparkles className="w-8 h-8 text-white" />
-              </motion.div>
-              <div className="text-center">
-                <div className="text-5xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent mb-2">
-                  {user?.credits?.toLocaleString() || '0'}
-                </div>
-                <div className="text-xl text-gray-600 dark:text-gray-400 font-medium">Credits Available</div>
+    <div className="min-h-screen bg-slate-900">
+      {/* Clean Header */}
+      <div className="bg-slate-800 border-b border-slate-700">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-emerald-500 rounded-lg">
+                <Coins className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">Credits & Billing</h1>
+                <p className="text-slate-400">Manage your credits and purchase packages</p>
               </div>
             </div>
-          </div>
-        </motion.div>
-
-        {/* Tabs */}
-        <div className="max-w-7xl mx-auto">
-          <div className="flex space-x-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-2 mb-8 max-w-md mx-auto border border-white/20 dark:border-gray-700/20">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              onClick={() => setActiveTab('packages')}
-              className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all ${
-                activeTab === 'packages'
-                  ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50'
-              }`}
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center space-x-2 px-4 py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition-colors"
             >
-              Buy Credits
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              onClick={() => setActiveTab('history')}
-              className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all ${
-                activeTab === 'history'
-                  ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg'
-                  : 'text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50'
-              }`}
-            >
-              History
-            </motion.button>
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back</span>
+            </button>
           </div>
+        </div>
+      </div>
 
-          <AnimatePresence mode="wait">
-            {activeTab === 'packages' && (
-              <motion.div
-                key="packages"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-12"
-              >
-                {/* Credit Usage Guide */}
-                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-8 border border-white/20 dark:border-gray-700/20 shadow-xl">
-                  <div className="text-center mb-8">
-                    <h3 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
-                      How Credits Work
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-lg">Every action in Granada OS is powered by Expert intelligence</p>
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Current Credits Card */}
+        <div className="bg-slate-800 rounded-xl p-6 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-emerald-500/20 rounded-lg">
+                <Wallet className="w-6 h-6 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Available Credits</h3>
+                <p className="text-slate-400">Use credits for AI proposals and searches</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-emerald-400">
+                {user?.credits?.toLocaleString() || '0'}
+              </div>
+              <div className="text-sm text-slate-400">Credits</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Clean Tabs */}
+        <div className="flex space-x-2 bg-slate-800 rounded-lg p-1 mb-8 max-w-sm mx-auto">
+          <button
+            onClick={() => setActiveTab('packages')}
+            className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
+              activeTab === 'packages'
+                ? 'bg-emerald-500 text-white'
+                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+            }`}
+          >
+            Buy Credits
+          </button>
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex-1 py-2 px-4 rounded-md font-medium transition-all ${
+              activeTab === 'history'
+                ? 'bg-emerald-500 text-white'
+                : 'text-slate-400 hover:text-white hover:bg-slate-700'
+            }`}
+          >
+            History
+          </button>
+        </div>
+
+        {activeTab === 'packages' && (
+          <div className="space-y-8">
+            {/* How Credits Work */}
+            <div className="bg-slate-800 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-white mb-4">How Credits Work</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {creditUsageExamples.map((example, index) => (
+                  <div key={index} className="bg-slate-700 rounded-lg p-4">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <div className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+                        {example.icon}
+                      </div>
+                      <div className="text-emerald-400 font-bold text-lg">{example.credits}</div>
+                    </div>
+                    <h4 className="font-semibold text-white text-sm mb-1">{example.action}</h4>
+                    <p className="text-slate-400 text-xs">{example.description}</p>
                   </div>
+                ))}
+              </div>
+            </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     {creditUsageExamples.map((example, index) => (
                       <motion.div

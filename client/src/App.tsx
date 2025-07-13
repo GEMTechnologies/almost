@@ -69,7 +69,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   // Initialize intelligent assistant
   useEffect(() => {
