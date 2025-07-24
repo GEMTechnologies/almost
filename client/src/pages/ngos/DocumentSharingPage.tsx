@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useParams } from 'wouter';
+import { Link, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   Share2,

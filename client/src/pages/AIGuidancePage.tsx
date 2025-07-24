@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'wouter';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Brain,
