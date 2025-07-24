@@ -36,6 +36,16 @@ import StudentsAcademiaPage from './modules/students-academia/StudentsAcademiaPa
 import JobsPage from './modules/jobs/JobsPage';
 import BusinessPage from './modules/business/BusinessPage';
 
+// NGO Modal-to-Page Conversions
+import DocumentUploadPage from './pages/ngos/DocumentUploadPage';
+import DocumentVersioningPage from './pages/ngos/DocumentVersioningPage';
+import DocumentSharingPage from './pages/ngos/DocumentSharingPage';
+import DocumentAnalyticsPage from './pages/ngos/DocumentAnalyticsPage';
+import DocumentCollaborationPage from './pages/ngos/DocumentCollaborationPage';
+import DocumentWritingProgressPage from './pages/ngos/DocumentWritingProgressPage';
+import ApplyPage from './pages/ApplyPage';
+import AIGuidancePage from './pages/AIGuidancePage';
+
 // Billing System
 import { BillingDashboard, BillingHistory, UserDashboard, PackagesPage } from './modules/billing';
 
@@ -158,6 +168,20 @@ function App() {
                   {/* NGOs as main landing dashboard */}
                   <Route path="/" element={<NGOPage />} />
                   <Route path="/NGOs" element={<NGOPage />} />
+                  
+                  {/* NGO Modal-to-Page Conversions - New Independent Pages */}
+                  <Route path="/ngos/documents/upload" element={<DocumentUploadPage userId="demo_user" />} />
+                  <Route path="/ngos/documents/versioning/:documentId" element={<DocumentVersioningPage />} />
+                  <Route path="/ngos/documents/versioning" element={<DocumentVersioningPage />} />
+                  <Route path="/ngos/documents/sharing/:documentId" element={<DocumentSharingPage />} />
+                  <Route path="/ngos/documents/sharing" element={<DocumentSharingPage />} />
+                  <Route path="/ngos/documents/analytics" element={<DocumentAnalyticsPage />} />
+                  <Route path="/ngos/documents/collaboration/:documentId" element={<DocumentCollaborationPage />} />
+                  <Route path="/ngos/documents/collaboration" element={<DocumentCollaborationPage />} />
+                  <Route path="/ngos/documents/writing-progress/:documentId" element={<DocumentWritingProgressPage />} />
+                  <Route path="/ngos/documents/writing-progress" element={<DocumentWritingProgressPage />} />
+                  <Route path="/apply/:opportunityId" element={<ApplyPage />} />
+                  <Route path="/ai/guidance" element={<AIGuidancePage />} />
                   
                   {/* Original routes for backward compatibility */}
                   <Route path="/landing" element={<LandingPage />} />
