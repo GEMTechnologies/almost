@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { storage } from "./modules/database/services/storage";
 
 const app = express();
 app.use(express.json());
@@ -62,7 +63,7 @@ app.use((req, res, next) => {
     // Fallback to storage
     try {
       const users = await storage.getAllUsers();
-      const userStats = users.reduce((acc, user) => {
+      const userStats = users.reduce((acc: Record<string, number>, user: any) => {
         acc[user.userType] = (acc[user.userType] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);

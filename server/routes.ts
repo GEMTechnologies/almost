@@ -2237,8 +2237,11 @@ This section demonstrates our commitment to meeting all requirements while deliv
   async function processAIAnalysis(analysis: any) {
     const { sessionDuration, metrics, intent, patterns, anomalies, recommendations } = analysis;
 
+    // Ensure metrics exists with default values
+    const safeMetrics = metrics || { frustrationScore: 0, engagementLevel: 0 };
+
     // Critical frustration detection - immediate expert help
-    if (metrics.frustrationScore > 0.8) {
+    if (safeMetrics.frustrationScore > 0.8) {
       return {
         type: 'help_offer',
         priority: 'urgent',
@@ -2273,7 +2276,7 @@ This section demonstrates our commitment to meeting all requirements while deliv
     }
 
     // High frustration - offer personalized help
-    if (metrics.frustrationScore > 0.6) {
+    if (safeMetrics.frustrationScore > 0.6) {
       return {
         type: 'help_offer',
         priority: 'high',
@@ -2308,7 +2311,8 @@ This section demonstrates our commitment to meeting all requirements while deliv
     }
 
     // Navigation confusion with backtracking
-    if (intent.strugglingWith?.includes('navigation') && metrics.backtrackingCount > 3) {
+    const safeIntent = intent || { strugglingWith: [] };
+    if (safeIntent.strugglingWith?.includes('navigation') && safeMetrics.backtrackingCount > 3) {
       return {
         type: 'guidance',
         priority: 'high',
@@ -2337,7 +2341,7 @@ This section demonstrates our commitment to meeting all requirements while deliv
     }
 
     // Low engagement with content finding struggle
-    if (metrics.engagementScore < 0.3 && intent.strugglingWith?.includes('finding_content')) {
+    if (safeMetrics.engagementScore < 0.3 && safeIntent.strugglingWith?.includes('finding_content')) {
       return {
         type: 'suggestion',
         priority: 'medium',
@@ -2372,7 +2376,7 @@ This section demonstrates our commitment to meeting all requirements while deliv
     }
 
     // Extended search session with minimal results
-    if (intent.primary === 'searching' && metrics.clickCount < 3 && sessionDuration > 45000) {
+    if (safeIntent.primary === 'searching' && safeMetrics.clickCount < 3 && sessionDuration > 45000) {
       return {
         type: 'suggestion',
         priority: 'medium',
