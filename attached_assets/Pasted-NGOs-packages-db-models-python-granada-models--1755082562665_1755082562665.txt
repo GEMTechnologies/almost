@@ -1,0 +1,90 @@
+NGOs
+├── packages
+│   ├── db-models
+│   │   └── python
+│   │       ├── granada_models 
+│   │       │   ├── __init__.py
+│   │       │   ├── finance.py 
+│   │       │   ├── project.py 
+│   │       │   ├── proposal.py
+│   │       │   ├── README.md  
+│   │       │   └── user.py    
+│   │       └── setup.py       
+│   └── ui-components
+│       ├── src
+│       │   ├── Button.jsx
+│       │   ├── Card.jsx
+│       │   └── Modal.jsx
+│       └── package.json
+├── services
+│   ├── ai-supervisor-service
+│   │   └── backend
+│   │       ├── monitors
+│   │       │   ├── __init__.py
+│   │       │   ├── grant_monitor.py
+│   │       │   └── project_monitor.py
+│   │       ├── reasoning_engine
+│   │       │   ├── __init__.py
+│   │       │   ├── gemini_client.py
+│   │       │   └── prompts.py
+│   │       ├── __init__.py
+│   │       ├── Dockerfile
+│   │       ├── main.py
+│   │       └── requirements.txt
+│   ├── finance-service
+│   │   ├── backend
+│   │   │   ├── __init__.py
+│   │   │   ├── Dockerfile
+│   │   │   ├── main.py
+│   │   │   ├── requirements.txt
+│   │   │   ├── router.py
+│   │   │   └── service.py
+│   │   └── frontend
+│   │       ├── src
+│   │       │   ├── App.jsx
+│   │       │   └── bootstrap.js
+│   │       ├── package.json
+│   │       └── webpack.config.js
+│   ├── grants-service
+│   │   ├── backend
+│   │   │   ├── __init__.py
+│   │   │   ├── Dockerfile
+│   │   │   ├── main.py
+│   │   │   ├── requirements.txt
+│   │   │   ├── router.py
+│   │   │   └── service.py
+│   │   └── frontend
+│   │       ├── src
+│   │       │   ├── App.jsx
+│   │       │   └── bootstrap.js
+│   │       ├── package.json
+│   │       └── webpack.config.js
+│   └── projects-service
+│       ├── backend
+│       │   ├── __init__.py
+│       │   ├── Dockerfile
+│       │   ├── main.py
+│       │   ├── requirements.txt
+│       │   ├── router.py
+│       │   └── service.py
+│       └── frontend
+│           ├── src
+│           │   ├── App.jsx
+│           │   └── bootstrap.js
+│           ├── package.json
+│           └── webpack.config.js
+├── shell-app
+│   └── frontend
+│       ├── src
+│       │   ├── components
+│       │   │   └── layout
+│       │   │       ├── Header.jsx
+│       │   │       └── Sidebar.jsx
+│       │   ├── pages
+│       │   │   ├── LoginPage.jsx
+│       │   │   └── NotFoundPage.jsx
+│       │   ├── App.jsx
+│       │   ├── bootstrap.js
+│       │   └── index.js
+│       ├── package.json
+│       └── webpack.config.js
