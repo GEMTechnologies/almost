@@ -1,0 +1,56 @@
+{
+  "name": "granada-ngo-management",
+  "version": "1.0.0",
+  "description": "Standalone NGO Management System with Microservices Architecture",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run start:shell",
+    "start:shell": "cd shell-app/frontend && npm start",
+    "start:services": "concurrently \"npm run start:ai\" \"npm run start:finance\" \"npm run start:grants\" \"npm run start:projects\"",
+    "start:ai": "cd services/ai-supervisor-service/backend && uvicorn main:app --host 0.0.0.0 --port 8001 --reload",
+    "start:finance": "cd services/finance-service/backend && uvicorn main:app --host 0.0.0.0 --port 8002 --reload",
+    "start:grants": "cd services/grants-service/backend && uvicorn main:app --host 0.0.0.0 --port 8003 --reload",
+    "start:projects": "cd services/projects-service/backend && uvicorn main:app --host 0.0.0.0 --port 8004 --reload",
+    "dev": "concurrently \"npm run start:services\" \"npm run start:shell\"",
+    "build": "npm run build:shell && npm run build:services",
+    "build:shell": "cd shell-app/frontend && npm run build",
+    "build:services": "concurrently \"npm run build:finance\" \"npm run build:grants\" \"npm run build:projects\"",
+    "build:finance": "cd services/finance-service/frontend && npm run build",
+    "build:grants": "cd services/grants-service/frontend && npm run build",
+    "build:projects": "cd services/projects-service/frontend && npm run build",
+    "install:all": "npm run install:shell && npm run install:services && npm run install:packages",
+    "install:shell": "cd shell-app/frontend && npm install",
+    "install:services": "concurrently \"npm run install:finance\" \"npm run install:grants\" \"npm run install:projects\"",
+    "install:finance": "cd services/finance-service/frontend && npm install",
+    "install:grants": "cd services/grants-service/frontend && npm install",
+    "install:projects": "cd services/projects-service/frontend && npm install",
+    "install:packages": "cd packages/ui-components && npm install",
+    "install:python": "cd packages/db-models/python && pip install -e .",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd shell-app/frontend && npm test",
+    "test:backend": "python -m pytest services/*/backend/tests/",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
+    "setup": "npm run install:all && npm run install:python"
+  },
+  "keywords": [
+    "ngo",
+    "management",
+    "microservices",
+    "fastapi",
+    "react",
+    "grants",
+    "finance",
+    "projects"
+  ],
+  "author": "Granada OS Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "python": ">=3.11.0"
+  }
+}

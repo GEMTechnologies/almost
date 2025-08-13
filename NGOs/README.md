@@ -1,6 +1,8 @@
-# Granada NGO Management System - Microservices Architecture
+# Granada NGO Management System - Standalone Application
 
-A comprehensive microservices-based NGO management platform built with modern web technologies and AI-powered supervision.
+A comprehensive standalone NGO management platform built with microservices architecture, modern web technologies, and AI-powered supervision.
+
+> **🚀 Quick Start**: See [QUICK_START.md](QUICK_START.md) to get running in 5 minutes!
 
 ## Architecture Overview
 

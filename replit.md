@@ -40,6 +40,7 @@ Preferred communication style: Simple, everyday language.
 ### Key Architectural Decisions
 - **NGO Microservices Independence**: Complete separation of NGO functionality into independent microservice architecture with shared packages and shell app orchestration
 - **Modal-to-Page Conversion**: Successfully converted all NGO modals to standalone pages with proper URL routing (`/ngos/documents/*`, `/ngos/*`)
+- **COMPLETED: Standalone NGO Application**: Converted NGOs folder into completely standalone application with Docker deployment, database initialization, and independent configuration
 - **Multi-Module Frontend**: Specialized modules cater to different user types (Student, NGO, Business, Job Seeker, Admin) with dedicated navigation and functionalities.
 - **AI-Powered Services**: Integration of AI for core features like proposal generation, donor matching, and document processing. This includes a streaming AI writer and media-rich proposal generation for automated creation of visual content (charts, tables, infographics). NEW: Dedicated AI Supervisor Service with Gemini integration for intelligent monitoring.
 - **Comprehensive Admin System (Wabden)**: Centralized management for users, opportunity verification, HR, accounting, and bot control for web scraping.

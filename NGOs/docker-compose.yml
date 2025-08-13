@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: granada_ngo
+      POSTGRES_USER: granada_user
+      POSTGRES_PASSWORD: granada_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U granada_user -d granada_ngo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AI Supervisor Service
+  ai-supervisor-service:
+    build:
+      context: ./services/ai-supervisor-service/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql://granada_user:granada_pass@postgres:5432/granada_ngo
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Finance Service
+  finance-service:
+    build:
+      context: ./services/finance-service/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql://granada_user:granada_pass@postgres:5432/granada_ngo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Grants Service
+  grants-service:
+    build:
+      context: ./services/grants-service/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql://granada_user:granada_pass@postgres:5432/granada_ngo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Projects Service
+  projects-service:
+    build:
+      context: ./services/projects-service/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql://granada_user:granada_pass@postgres:5432/granada_ngo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Shell Application (Frontend)
+  shell-app:
+    build:
+      context: ./shell-app/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_AI_URL=http://localhost:8001
+      - REACT_APP_API_FINANCE_URL=http://localhost:8002
+      - REACT_APP_API_GRANTS_URL=http://localhost:8003
+      - REACT_APP_API_PROJECTS_URL=http://localhost:8004
+    depends_on:
+      - ai-supervisor-service
+      - finance-service
+      - grants-service
+      - projects-service
+    restart: unless-stopped
+
+  # Redis for caching and sessions
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: granada_ngo_network
